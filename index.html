@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SEO & Social Title (已更新) -->
     <title>複利計算機 & 財務規劃工具 | 退休金、儲蓄、通膨、目標規劃</title>
     <meta property="og:title" content="複利計算機 & 財務規劃工具 | 退休金、儲蓄、通膨、目標規劃">
-    
-    <!-- SEO & Social Description (已更新) -->
     <meta name="description" content="最強大的線上複利計算機！支援通膨、投入成長、目標反推與儲存多個理財計畫。立即視覺化您的退休金與財務藍圖。">
     <meta property="og:description" content="最強大的線上複利計算機！支援通膨、投入成長、目標反推與儲存多個理財計畫。立即視覺化您的退休金與財務藍圖。">
-
-    <!-- Other Social Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://aaronn1128.github.io/compound-calculator/">
     <meta property="og:image" content="https://i.imgur.com/xJ2s7z4.png">
@@ -26,84 +21,25 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
+    <!-- Google AdSense Main Script START -->
+    <!-- TODO: 請將 'ca-pub-XXXXXXXXXXXXXXXX' 替換成您自己的 AdSense 發布商 ID -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+    <!-- Google AdSense Main Script END -->
+
     <style>
-        body {
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
-        }
-        .form-input {
-            transition: all 0.3s ease;
-        }
-        .result-value {
-            font-weight: 700;
-            font-size: 1.75rem; /* 28px */
-            line-height: 2.25rem; /* 36px */
-            transition: color 0.4s ease, transform 0.4s ease;
-        }
-        .value-update {
-            animation: pulse-light 0.7s ease-out;
-        }
-        @keyframes pulse-light {
-            0% { color: #4f46e5; transform: scale(1); }
-            50% { color: #818cf8; transform: scale(1.05); }
-            100% { color: #4f46e5; transform: scale(1); }
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 5px;
-            outline: none;
-            opacity: 0.7;
-            transition: opacity .2s;
-        }
-        input[type="range"]:hover {
-            opacity: 1;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #4f46e5;
-            cursor: pointer;
-            border-radius: 50%;
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #4f46e5;
-            cursor: pointer;
-            border-radius: 50%;
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        .table-container {
-            max-height: 250px; /* 控制表格最大高度 */
-            overflow-y: auto;
-        }
-        .tab-button { 
-            transition: all 0.3s ease; 
-            border-color: transparent;
-        }
-        .tab-button.active { 
-            border-color: #4f46e5; 
-            color: #4f46e5; 
-            background-color: #eef2ff; 
-        }
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
+        .form-input { transition: all 0.3s ease; }
+        .result-value { font-weight: 700; font-size: 1.75rem; line-height: 2.25rem; transition: color 0.4s ease, transform 0.4s ease; }
+        .value-update { animation: pulse-light 0.7s ease-out; }
+        @keyframes pulse-light { 0% { color: #4f46e5; transform: scale(1); } 50% { color: #818cf8; transform: scale(1.05); } 100% { color: #4f46e5; transform: scale(1); } }
+        input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; }
+        input[type="range"]:hover { opacity: 1; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #4f46e5; cursor: pointer; border-radius: 50%; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .table-container { max-height: 250px; overflow-y: auto; }
+        .tab-button { transition: all 0.3s ease; border-color: transparent; }
+        .tab-button.active { border-color: #4f46e5; color: #4f46e5; background-color: #eef2ff; }
     </style>
 </head>
 <body class="bg-slate-100">
@@ -169,12 +105,22 @@
                         <input type="range" id="inflationRateSlider" min="0" max="10" step="0.1" value="2" class="mt-2">
                     </div>
                 </div>
+
+                <!-- Ad Slot 1: Left Column Bottom START -->
+                <div class="mt-6">
+                    <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
+                    <!-- TODO: 請將此處的程式碼替換成您從 AdSense 獲取的廣告單元程式碼 -->
+                    <div style="min-height: 250px; background: #f1f5f9; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                         廣告版位 1
+                    </div>
+                </div>
+                <!-- Ad Slot 1 END -->
             </div>
 
             <!-- Result and Chart Section (Right) -->
             <div class="lg:col-span-3 bg-slate-50 rounded-xl p-6 flex flex-col">
                 <!-- Projection Results -->
-                <div id="projection-results">
+                <div id="projection-results" class="flex flex-col flex-grow">
                     <h2 class="text-xl font-bold text-slate-800">資產預測結果</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="p-4 bg-white rounded-lg shadow-sm">
@@ -196,6 +142,15 @@
                             </table>
                         </div>
                     </div>
+                     <!-- Ad Slot 2: Right Column Bottom START -->
+                    <div class="mt-6">
+                         <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
+                         <!-- TODO: 請將此處的程式碼替換成您從 AdSense 獲取的廣告單元程式碼 -->
+                        <div style="min-height: 100px; background: #ffffff; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8; border: 1px solid #e2e8f0;">
+                            廣告版位 2
+                        </div>
+                    </div>
+                    <!-- Ad Slot 2 END -->
                 </div>
                 <!-- Goal Results -->
                 <div id="goal-results" class="hidden">
@@ -214,6 +169,7 @@
     </div>
 
     <script>
+        // ... JavaScript 程式碼部分與您提供的版本相同 ...
         // DOM Elements
         const DOMElements = {
             tabs: { projection: document.getElementById('tab-projection'), goal: document.getElementById('tab-goal') },
@@ -396,4 +352,3 @@
     </script>
 </body>
 </html>
-
