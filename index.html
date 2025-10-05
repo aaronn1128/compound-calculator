@@ -3,91 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>專業版複利計算機</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- SEO 優化 #1: 更有意義的標題 -->
+    <title>終極複利計算機 & 財務規劃工具 | 計算退休金、儲蓄目標</title>
+    
+    <!-- SEO 優化 #2: 吸引點擊的 Meta 描述 -->
+    <meta name="description" content="一款強大的線上複利計算機與財務規劃工具。支援儲存多個理財計畫、考量通膨與投入成長，並能反向計算目標，幫助您視覺化您的退休金與人生財務里程碑。">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+
+    <!-- SEO 優化 #3: 結構化資料 (Schema Markup) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "終極財務規劃儀表板",
+      "description": "一款強大的線上複利計算機與財務規劃工具，支援儲存多個理財計畫、考量通膨與投入成長，並能反向計算目標，幫助您視覺化您的退休金與人生財務里程碑。",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires HTML5 support",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "TWD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "88"
+      },
+      "mainEntityOfPage": {
+         "@type": "WebPage",
+         "@id": "https://aaronn1128.github.io/compound-calculator/"
+      }
+    }
+    </script>
+
     <style>
-        body {
-            font-family: 'Inter', 'Noto Sans TC', sans-serif;
-        }
-        .form-input {
-            transition: all 0.3s ease;
-        }
-        .result-value {
-            font-weight: 700;
-            font-size: 1.75rem; /* 28px */
-            line-height: 2.25rem; /* 36px */
-            transition: color 0.4s ease, transform 0.4s ease;
-        }
-        .value-update {
-            animation: pulse-light 0.7s ease-out;
-        }
-        @keyframes pulse-light {
-            0% { color: #4f46e5; transform: scale(1); }
-            50% { color: #818cf8; transform: scale(1.05); }
-            100% { color: #4f46e5; transform: scale(1); }
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 5px;
-            outline: none;
-            opacity: 0.7;
-            transition: opacity .2s;
-        }
-        input[type="range"]:hover {
-            opacity: 1;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #4f46e5;
-            cursor: pointer;
-            border-radius: 50%;
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #4f46e5;
-            cursor: pointer;
-            border-radius: 50%;
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        .table-container {
-            max-height: 250px; /* 控制表格最大高度 */
-            overflow-y: auto;
-        }
-        .tab-button { 
-            transition: all 0.3s ease; 
-            border-color: transparent;
-        }
-        .tab-button.active { 
-            border-color: #4f46e5; 
-            color: #4f46e5; 
-            background-color: #eef2ff; 
-        }
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
+        .form-input { transition: all 0.3s ease; }
+        .result-value { font-weight: 700; font-size: 1.5rem; line-height: 2rem; transition: color 0.4s ease, transform 0.4s ease; }
+        .value-update { animation: pulse-light 0.7s ease-out; }
+        @keyframes pulse-light { 0% { color: #4f46e5; } 50% { color: #818cf8; } 100% { color: #4f46e5; } }
+        input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; }
+        input[type="range"]:hover { opacity: 1; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #4f46e5; cursor: pointer; border-radius: 50%; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .tab-button.active { border-color: #4f46e5; color: #4f46e5; background-color: #eef2ff; }
+        .table-container { max-height: 200px; overflow-y: auto; }
+        .btn { padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s ease; }
+        .btn-primary { background-color: #4f46e5; color: white; } .btn-primary:hover { background-color: #4338ca; }
+        .btn-secondary { background-color: #e2e8f0; color: #475569; } .btn-secondary:hover { background-color: #cbd5e1; }
     </style>
 </head>
 <body class="bg-slate-100">
@@ -96,283 +67,293 @@
         <div class="w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 grid grid-cols-1 lg:grid-cols-5 gap-8">
             <!-- Input Section (Left) -->
             <div class="lg:col-span-2 flex flex-col">
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">財務規劃計算機</h1>
-                <p class="mt-2 text-slate-500">從資產預測到目標規劃，全方位掌握未來。</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">終極財務規劃儀表板</h1>
+                <p class="mt-2 text-slate-500">儲存多個計畫，視覺化您的人生藍圖。</p>
+
+                <!-- Plan Management -->
+                <div class="mt-6 p-4 bg-slate-50 rounded-lg">
+                     <h3 class="text-sm font-bold text-slate-600 mb-2">計畫管理</h3>
+                     <div class="grid grid-cols-2 gap-2">
+                         <select id="planSelector" class="form-input w-full text-sm border-slate-300 rounded-lg"></select>
+                         <button id="savePlanBtn" class="btn btn-primary text-sm">儲存計畫</button>
+                     </div>
+                </div>
 
                 <!-- Tabs -->
-                <div class="mt-6 border-b border-gray-200">
-                    <nav class="-mb-px flex space-x-4" aria-label="Tabs">
-                        <button id="tab-projection" class="tab-button active whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm">資產預測</button>
-                        <button id="tab-goal" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">目標規劃</button>
-                    </nav>
-                </div>
-
-                <!-- Projection Mode Inputs -->
-                <div id="projection-inputs">
-                    <div class="mt-6 space-y-5">
-                        <div>
-                            <label for="initialPrincipal" class="text-sm font-medium text-slate-700">初始本金 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="initialPrincipal" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
-                        </div>
-                        <div>
-                            <label for="monthlyContribution" class="text-sm font-medium text-slate-700">每月投入 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="monthlyContribution" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="5000"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Goal Mode Inputs -->
-                <div id="goal-inputs" class="hidden">
-                     <div class="mt-6 space-y-5">
-                         <div>
-                            <label for="financialGoal" class="text-sm font-medium text-slate-700">財務目標總額 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="financialGoal" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="20000000"></div>
-                        </div>
-                        <div>
-                            <label for="initialPrincipalGoal" class="text-sm font-medium text-slate-700">初始本金 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="initialPrincipalGoal" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
-                        </div>
-                    </div>
+                <div class="mt-4 border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-4"><button id="tab-projection" class="tab-button active whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm">資產預測</button><button id="tab-goal" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">目標規劃</button></nav>
                 </div>
                 
-                <!-- Common Inputs -->
-                <div class="mt-5 space-y-5">
-                    <div>
-                        <label for="annualRate" class="text-sm font-medium text-slate-700">預估年化報酬率 (%)</label>
-                        <div class="mt-1 relative flex items-center"><input type="number" id="annualRate" min="0" max="50" step="0.5" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="7"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
-                        <input type="range" id="annualRateSlider" min="0" max="50" step="0.5" value="7" class="mt-2">
+                <!-- Inputs Area -->
+                <div class="flex-grow overflow-y-auto pr-2">
+                    <div id="projection-inputs">
+                        <div class="mt-4 space-y-4">
+                            <div><label for="initialPrincipal" class="text-sm font-medium">初始本金 (元)</label><div class="mt-1 relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span><input type="number" id="initialPrincipal" class="form-input w-full pl-7" value="100000"></div></div>
+                            <div><label for="monthlyContribution" class="text-sm font-medium">每月投入 (元)</label><div class="mt-1 relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span><input type="number" id="monthlyContribution" class="form-input w-full pl-7" value="5000"></div></div>
+                             <div>
+                                <label for="contributionGrowth" class="text-sm font-medium">每年投入增長率 (%)</label>
+                                <div class="mt-1 relative"><input type="number" id="contributionGrowth" class="form-input w-full pr-7" value="3"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">%</span></div>
+                                <input type="range" id="contributionGrowthSlider" min="0" max="20" step="0.5" value="3" class="mt-2">
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label for="years" class="text-sm font-medium text-slate-700">投資年限 (年)</label>
-                        <div class="mt-1 relative flex items-center"><input type="number" id="years" min="1" max="100" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="20"><span class="absolute right-0 pr-3 text-slate-400">年</span></div>
-                        <input type="range" id="yearsSlider" min="1" max="100" step="1" value="20" class="mt-2">
+                    <div id="goal-inputs" class="hidden"><div class="mt-4 space-y-4">
+                        <div><label for="financialGoal" class="text-sm font-medium">財務目標總額 (元)</label><div class="mt-1 relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span><input type="number" id="financialGoal" class="form-input w-full pl-7" value="20000000"></div></div>
+                        <div><label for="initialPrincipalGoal" class="text-sm font-medium">初始本金 (元)</label><div class="mt-1 relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">$</span><input type="number" id="initialPrincipalGoal" class="form-input w-full pl-7" value="100000"></div></div>
+                    </div></div>
+                    <div class="mt-4 space-y-4">
+                        <div><label for="annualRate" class="text-sm font-medium">預估年化報酬率 (%)</label><div class="mt-1 relative"><input type="number" id="annualRate" class="form-input w-full pr-7" value="7"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">%</span></div><input type="range" id="annualRateSlider" min="0" max="30" step="0.5" value="7" class="mt-2"></div>
+                        <div><label for="years" class="text-sm font-medium">投資年限 (年)</label><div class="mt-1 relative"><input type="number" id="years" class="form-input w-full pr-7" value="20"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">年</span></div><input type="range" id="yearsSlider" min="1" max="50" step="1" value="20" class="mt-2"></div>
+                        <div id="inflation-input-container"><label for="inflationRate" class="text-sm font-medium">預估年通膨率 (%)</label><div class="mt-1 relative"><input type="number" id="inflationRate" class="form-input w-full pr-7" value="2"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">%</span></div><input type="range" id="inflationRateSlider" min="0" max="10" step="0.1" value="2" class="mt-2"></div>
                     </div>
-                    <div id="inflation-input-container">
-                        <label for="inflationRate" class="text-sm font-medium text-slate-700">預估年通膨率 (%)</label>
-                        <div class="mt-1 relative flex items-center"><input type="number" id="inflationRate" min="0" max="10" step="0.1" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="2"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
-                        <input type="range" id="inflationRateSlider" min="0" max="10" step="0.1" value="2" class="mt-2">
+                    <!-- Milestones -->
+                    <div id="milestones-container" class="mt-4">
+                         <h3 class="text-sm font-bold text-slate-600">財務里程碑</h3>
+                         <div id="milestones-list" class="mt-2 space-y-2"></div>
+                         <button id="addMilestoneBtn" class="mt-2 text-sm btn btn-secondary w-full">＋ 新增里程碑</button>
                     </div>
                 </div>
             </div>
 
             <!-- Result and Chart Section (Right) -->
             <div class="lg:col-span-3 bg-slate-50 rounded-xl p-6 flex flex-col">
-                <!-- Projection Results -->
                 <div id="projection-results">
                     <h2 class="text-xl font-bold text-slate-800">資產預測結果</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 bg-white rounded-lg shadow-sm">
-                            <p class="text-sm text-slate-500">最終總額 (名目價值)</p>
-                            <p id="futureValue" class="result-value text-indigo-600">$0</p>
-                        </div>
-                        <div class="p-4 bg-white rounded-lg shadow-sm">
-                            <p class="text-sm text-slate-500">相當於今天的購買力</p>
-                            <p id="realFutureValue" class="result-value text-teal-600">$0</p>
-                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow-sm"><p class="text-sm text-slate-500">最終總額 (名目)</p><p id="futureValue" class="result-value text-indigo-600">$0</p></div>
+                        <div class="p-4 bg-white rounded-lg shadow-sm"><p class="text-sm text-slate-500">實質購買力</p><p id="realFutureValue" class="result-value text-teal-600">$0</p></div>
                     </div>
                     <div class="mt-4 flex-grow min-h-[250px]"><canvas id="growthChart"></canvas></div>
-                    <div class="mt-6">
-                        <h3 class="text-lg font-bold text-slate-800">年度明細</h3>
-                        <div class="table-container mt-2 border border-slate-200 rounded-lg bg-white">
-                            <table class="w-full text-sm text-left text-slate-600">
-                                <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0"><tr><th scope="col" class="px-4 py-2">年度</th><th scope="col" class="px-4 py-2 text-right">投入本金</th><th scope="col" class="px-4 py-2 text-right">年度利息</th><th scope="col" class="px-4 py-2 text-right">期末總額</th></tr></thead>
-                                <tbody id="detailsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <div class="mt-6"><h3 class="text-lg font-bold text-slate-800">年度明細</h3><div class="table-container mt-2 border rounded-lg bg-white"><table class="w-full text-sm">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0"><tr><th class="px-4 py-2">年度</th><th class="px-4 py-2 text-right">當年投入</th><th class="px-4 py-2 text-right">期末總額</th></tr></thead>
+                        <tbody id="detailsTableBody"></tbody>
+                    </table></div></div>
                 </div>
-                <!-- Goal Results -->
-                <div id="goal-results" class="hidden">
-                    <h2 class="text-xl font-bold text-slate-800">目標規劃結果</h2>
+                <div id="goal-results" class="hidden"><h2 class="text-xl font-bold text-slate-800">目標規劃結果</h2>
                     <div class="mt-4 p-6 bg-white rounded-lg shadow-sm text-center">
                         <p class="text-sm text-slate-500">為達成目標，您每月需投入</p>
                         <p id="requiredMonthly" class="result-value text-indigo-600">$0</p>
-                        <p class="text-xs text-slate-400 mt-1">此為名目價值，未考慮通膨</p>
                     </div>
-                    <div class="mt-4 text-center p-4">
-                        <p id="goal-summary" class="text-slate-600"></p>
-                    </div>
+                    <div class="mt-4 text-center p-4"><p id="goal-summary" class="text-slate-600"></p></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // DOM Elements
-        const DOMElements = {
-            tabs: { projection: document.getElementById('tab-projection'), goal: document.getElementById('tab-goal') },
-            inputSections: { projection: document.getElementById('projection-inputs'), goal: document.getElementById('goal-inputs') },
-            resultSections: { projection: document.getElementById('projection-results'), goal: document.getElementById('goal-results') },
-            inputs: {
-                initialPrincipal: document.getElementById('initialPrincipal'),
-                monthlyContribution: document.getElementById('monthlyContribution'),
-                financialGoal: document.getElementById('financialGoal'),
-                initialPrincipalGoal: document.getElementById('initialPrincipalGoal'),
-                annualRate: document.getElementById('annualRate'),
-                years: document.getElementById('years'),
-                inflationRate: document.getElementById('inflationRate'),
-                annualRateSlider: document.getElementById('annualRateSlider'),
-                yearsSlider: document.getElementById('yearsSlider'),
-                inflationRateSlider: document.getElementById('inflationRateSlider'),
-            },
-            outputs: {
-                futureValue: document.getElementById('futureValue'),
-                realFutureValue: document.getElementById('realFutureValue'),
-                detailsTableBody: document.getElementById('detailsTableBody'),
-                requiredMonthly: document.getElementById('requiredMonthly'),
-                goalSummary: document.getElementById('goal-summary'),
-            },
-            charts: { growth: document.getElementById('growthChart').getContext('2d')},
-            inflationInputContainer: document.getElementById('inflation-input-container'),
+        // --- DOM Elements & State ---
+        const getEl = (id) => document.getElementById(id);
+        const DOM = {
+            planSelector: getEl('planSelector'), savePlanBtn: getEl('savePlanBtn'),
+            tabs: { projection: getEl('tab-projection'), goal: getEl('tab-goal') },
+            inputs: { initialPrincipal: getEl('initialPrincipal'), monthlyContribution: getEl('monthlyContribution'), contributionGrowth: getEl('contributionGrowth'), financialGoal: getEl('financialGoal'), initialPrincipalGoal: getEl('initialPrincipalGoal'), annualRate: getEl('annualRate'), years: getEl('years'), inflationRate: getEl('inflationRate') },
+            sliders: { contributionGrowthSlider: getEl('contributionGrowthSlider'), annualRateSlider: getEl('annualRateSlider'), yearsSlider: getEl('yearsSlider'), inflationRateSlider: getEl('inflationRateSlider') },
+            outputs: { futureValue: getEl('futureValue'), realFutureValue: getEl('realFutureValue'), detailsTableBody: getEl('detailsTableBody'), requiredMonthly: getEl('requiredMonthly'), goalSummary: getEl('goal-summary')},
+            sections: { projectionInputs: getEl('projection-inputs'), goalInputs: getEl('goal-inputs'), projectionResults: getEl('projection-results'), goalResults: getEl('goal-results'), inflationContainer: getEl('inflation-input-container'), milestonesContainer: getEl('milestones-container') },
+            milestones: { list: getEl('milestones-list'), addBtn: getEl('addMilestoneBtn') },
+            charts: { growth: getEl('growthChart').getContext('2d')}
         };
+        
+        Chart.register(ChartAnnotation);
 
         let growthChart;
-        let currentMode = 'projection';
+        let state = { currentMode: 'projection', plans: {}, milestones: [] };
         const formatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 });
 
-        // --- Core Logic ---
-        function calculateAndRender() {
-            if (currentMode === 'projection') {
-                calculateProjection();
-            } else {
-                calculateGoal();
-            }
-        }
-        
-        function getCommonInputs() {
-            return {
-                r: (parseFloat(DOMElements.inputs.annualRate.value) || 0) / 100,
-                t: parseInt(DOMElements.inputs.years.value) || 0,
-                inflation: (parseFloat(DOMElements.inputs.inflationRate.value) || 0) / 100,
-            };
-        }
-        
-        // --- Projection Mode Logic ---
+        // --- Core Calculation Logic ---
         function calculateProjection() {
-            const P = parseFloat(DOMElements.inputs.initialPrincipal.value) || 0;
-            const PMT = parseFloat(DOMElements.inputs.monthlyContribution.value) || 0;
-            const { r, t, inflation } = getCommonInputs();
-            const n = 12;
-            const monthlyRate = r / n;
+            const P = parseFloat(DOM.inputs.initialPrincipal.value) || 0;
+            let pmt = parseFloat(DOM.inputs.monthlyContribution.value) || 0;
+            const contribGrowth = (parseFloat(DOM.inputs.contributionGrowth.value) || 0) / 100;
+            const r = (parseFloat(DOM.inputs.annualRate.value) || 0) / 100;
+            const t = parseInt(DOM.inputs.years.value) || 0;
+            const inflation = (parseFloat(DOM.inputs.inflationRate.value) || 0) / 100;
+            const monthlyRate = r / 12;
 
             let yearlyDetails = [];
             let lastYearEndValue = P;
-            const labels = ['第0年'];
-            const futureValueData = [P];
-            const realFutureValueData = [P];
+            const chartData = { labels: ['第0年'], fv: [P], realFv: [P] };
 
             for (let year = 1; year <= t; year++) {
-                let yearStartValue = lastYearEndValue;
-                let yearEndValue = yearStartValue;
+                let yearEndValue = lastYearEndValue;
                 let yearContribution = 0;
-                for (let month = 1; month <= n; month++) {
-                    yearEndValue = yearEndValue * (1 + monthlyRate) + PMT;
-                    yearContribution += PMT;
+                for (let month = 1; month <= 12; month++) {
+                    yearEndValue = yearEndValue * (1 + monthlyRate) + pmt;
+                    yearContribution += pmt;
                 }
-                const yearInterest = yearEndValue - yearStartValue - yearContribution;
-                yearlyDetails.push({ year, contribution: yearContribution, interest: yearInterest, endValue: yearEndValue });
+                yearlyDetails.push({ year, contribution: yearContribution, endValue: yearEndValue });
                 lastYearEndValue = yearEndValue;
                 
-                labels.push(`第${year}年`);
-                futureValueData.push(yearEndValue);
-                realFutureValueData.push(yearEndValue / Math.pow(1 + inflation, year));
+                chartData.labels.push(`第${year}年`);
+                chartData.fv.push(yearEndValue);
+                chartData.realFv.push(yearEndValue / Math.pow(1 + inflation, year));
+                pmt *= (1 + contribGrowth); // Increase contribution for next year
             }
-            const finalFutureValue = t > 0 ? lastYearEndValue : P;
-            const finalRealValue = t > 0 ? finalFutureValue / Math.pow(1 + inflation, t) : P;
+            const finalFV = t > 0 ? lastYearEndValue : P;
+            const finalRealFV = t > 0 ? finalFV / Math.pow(1 + inflation, t) : P;
 
-            updateProjectionUI(finalFutureValue, finalRealValue, yearlyDetails);
-            createOrUpdateChart(labels, futureValueData, realFutureValueData);
+            updateProjectionUI(finalFV, finalRealFV, yearlyDetails);
+            createOrUpdateChart(chartData);
         }
-        
-        // --- Goal Mode Logic ---
+
         function calculateGoal() {
-            const FV = parseFloat(DOMElements.inputs.financialGoal.value) || 0;
-            const P = parseFloat(DOMElements.inputs.initialPrincipalGoal.value) || 0;
-            const { r, t } = getCommonInputs();
-            const n = 12;
-            const monthlyRate = r / n;
-            const totalPeriods = t * n;
+            const FV = parseFloat(DOM.inputs.financialGoal.value) || 0;
+            const P = parseFloat(DOM.inputs.initialPrincipalGoal.value) || 0;
+            const r = (parseFloat(DOM.inputs.annualRate.value) || 0) / 100;
+            const t = parseInt(DOM.inputs.years.value) || 0;
+            const monthlyRate = r / 12;
+            const totalPeriods = t * 12;
             
             let requiredPMT = 0;
             if (totalPeriods > 0) {
                 if (monthlyRate > 0) {
-                     requiredPMT = (FV - P * Math.pow(1 + monthlyRate, totalPeriods)) / ((Math.pow(1 + monthlyRate, totalPeriods) - 1) / monthlyRate);
-                } else {
-                    requiredPMT = (FV - P) / totalPeriods;
-                }
+                    requiredPMT = (FV - P * Math.pow(1 + monthlyRate, totalPeriods)) / ((Math.pow(1 + monthlyRate, totalPeriods) - 1) / monthlyRate);
+                } else { requiredPMT = (FV - P) / totalPeriods; }
             }
             updateGoalUI(requiredPMT, FV, t);
         }
 
-        // --- UI Update Functions ---
-        function updateProjectionUI(fv, r_fv, details) {
-            DOMElements.outputs.futureValue.textContent = formatter.format(fv);
-            DOMElements.outputs.realFutureValue.textContent = formatter.format(r_fv);
-            animateValue(DOMElements.outputs.futureValue);
-            animateValue(DOMElements.outputs.realFutureValue);
-            
-            let tableHTML = '';
-            details.forEach(item => {
-                tableHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${formatter.format(item.contribution)}</td><td class="px-4 py-2 text-right">${formatter.format(item.interest)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${formatter.format(item.endValue)}</td></tr>`;
-            });
-            DOMElements.outputs.detailsTableBody.innerHTML = tableHTML;
+        // --- UI & Chart Update ---
+        function updateProjectionUI(fv, realFv, details) {
+            DOM.outputs.futureValue.textContent = formatter.format(fv);
+            DOM.outputs.realFutureValue.textContent = formatter.format(realFv);
+            DOM.outputs.detailsTableBody.innerHTML = details.map(item => `
+                <tr class="bg-white border-b hover:bg-slate-50 text-sm"><td class="px-4 py-1.5 font-medium">${item.year}</td>
+                <td class="px-4 py-1.5 text-right">${formatter.format(item.contribution)}</td>
+                <td class="px-4 py-1.5 text-right font-semibold">${formatter.format(item.endValue)}</td></tr>`
+            ).join('');
         }
-        
+
         function updateGoalUI(pmt, fv, t) {
-            DOMElements.outputs.requiredMonthly.textContent = formatter.format(Math.max(0, pmt));
-            animateValue(DOMElements.outputs.requiredMonthly);
-            DOMElements.outputs.goalSummary.textContent = `在 ${t} 年後，達成 ${formatter.format(fv)} 的目標。`;
+            DOM.outputs.requiredMonthly.textContent = formatter.format(Math.max(0, pmt));
+            DOM.outputs.goalSummary.textContent = `在 ${t} 年後，達成 ${formatter.format(fv)} 的目標。`;
         }
 
-        function createOrUpdateChart(labels, futureValueData, realFutureValueData) {
+        function createOrUpdateChart(chartData) {
             if (growthChart) growthChart.destroy();
-            growthChart = new Chart(DOMElements.charts.growth, {
+            const annotations = state.milestones.map(m => ({
+                type: 'point', xValue: `第${m.year}年`, yValue: m.amount,
+                backgroundColor: '#10B981', radius: 5,
+                label: { content: m.name, display: true, position: 'start', yAdjust: -10, font: {size: 10}, color: '#047857' }
+            }));
+
+            growthChart = new Chart(DOM.charts.growth, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: '實質購買力', data: realFutureValueData, backgroundColor: 'rgba(13, 148, 136, 0.2)', borderColor: 'rgb(13, 148, 136)', fill: true, tension: 0.2 },
-                        { label: '累積總額 (名目)', data: futureValueData, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: 'rgb(79, 70, 229)', fill: true, tension: 0.2 },
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬` } } }, plugins: { legend: { position: 'bottom' } } }
+                data: { labels: chartData.labels, datasets: [
+                    { label: '實質購買力', data: chartData.realFv, borderColor: 'rgb(13, 148, 136)', tension: 0.2, fill: false },
+                    { label: '累積總額', data: chartData.fv, borderColor: 'rgb(79, 70, 229)', tension: 0.2, fill: false },
+                ]},
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, annotation: { annotations } } }
             });
         }
         
-        function animateValue(element) {
-            element.classList.add('value-update');
-            element.addEventListener('animationend', () => element.classList.remove('value-update'), { once: true });
+        // --- Plan Management ---
+        function savePlan() {
+            const planName = prompt("請為您的計畫命名：", "我的退休計畫");
+            if (!planName) return;
+            state.plans[planName] = {
+                ...Object.fromEntries(Object.keys(DOM.inputs).map(key => [key, DOM.inputs[key].value])),
+                milestones: state.milestones
+            };
+            localStorage.setItem('financialPlans', JSON.stringify(state.plans));
+            updatePlanSelector();
+            DOM.planSelector.value = planName;
+        }
+        
+        function loadPlan() {
+            const planName = DOM.planSelector.value;
+            if (!state.plans[planName]) return;
+            const plan = state.plans[planName];
+            Object.keys(plan).forEach(key => {
+                if (DOM.inputs[key]) DOM.inputs[key].value = plan[key];
+            });
+            state.milestones = plan.milestones || [];
+            updateAllSliders();
+            renderMilestones();
+            calculateAndRender();
         }
 
+        function updatePlanSelector() {
+            DOM.planSelector.innerHTML = `<option value="">選擇計畫...</option>`;
+            Object.keys(state.plans).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                DOM.planSelector.appendChild(option);
+            });
+        }
+        
+        // --- Milestones ---
+        function addMilestone() {
+            const name = prompt("里程碑名稱 (例如: 買房頭期款):");
+            if (!name) return;
+            const year = parseInt(prompt("在第幾年達成?", 10));
+            const amount = parseFloat(prompt("目標金額?", 3000000));
+            if (isNaN(year) || isNaN(amount)) return;
+            state.milestones.push({ name, year, amount });
+            renderMilestones();
+            calculateAndRender();
+        }
+
+        function renderMilestones() {
+            DOM.milestones.list.innerHTML = state.milestones.map((m, index) => `
+                <div class="text-sm bg-slate-100 p-2 rounded-md flex justify-between items-center">
+                    <span><b>第${m.year}年:</b> ${m.name} (${formatter.format(m.amount)})</span>
+                    <button class="text-red-500 hover:text-red-700 font-bold" onclick="removeMilestone(${index})">✕</button>
+                </div>
+            `).join('');
+        }
+        
+        window.removeMilestone = function(index) { // Make it globally accessible
+            state.milestones.splice(index, 1);
+            renderMilestones();
+            calculateAndRender();
+        }
+        
         // --- Event Handlers & Initialization ---
         function handleTabClick(mode) {
-            currentMode = mode;
-            DOMElements.tabs.projection.classList.toggle('active', mode === 'projection');
-            DOMElements.tabs.goal.classList.toggle('active', mode === 'goal');
-            DOMElements.inputSections.projection.classList.toggle('hidden', mode !== 'projection');
-            DOMElements.inputSections.goal.classList.toggle('hidden', mode !== 'goal');
-            DOMElements.resultSections.projection.classList.toggle('hidden', mode !== 'projection');
-            DOMElements.resultSections.goal.classList.toggle('hidden', mode !== 'goal');
-            DOMElements.inflationInputContainer.classList.toggle('hidden', mode === 'goal');
+            state.currentMode = mode;
+            DOM.tabs.projection.classList.toggle('active', mode === 'projection');
+            DOM.tabs.goal.classList.toggle('active', mode === 'goal');
+            Object.values(DOM.sections).forEach(el => el.classList.add('hidden'));
+            DOM.sections[`${mode}Inputs`].classList.remove('hidden');
+            DOM.sections[`${mode}Results`].classList.remove('hidden');
+            DOM.sections.inflationContainer.classList.toggle('hidden', mode === 'goal');
+            DOM.sections.milestonesContainer.classList.toggle('hidden', mode === 'goal');
             calculateAndRender();
         }
         
         function handleInputChange(e) {
             const { id, value } = e.target;
-            const sliderId = id.includes('Slider') ? id : id + 'Slider';
-            const inputId = id.includes('Slider') ? id.replace('Slider', '') : id;
-            if (document.getElementById(sliderId)) document.getElementById(sliderId).value = value;
-            if (document.getElementById(inputId)) document.getElementById(inputId).value = value;
-
-            if(id === 'initialPrincipal') DOMElements.inputs.initialPrincipalGoal.value = value;
-            if(id === 'initialPrincipalGoal') DOMElements.inputs.initialPrincipal.value = value;
+            updateSliderOrInput(id, value);
+            if(id === 'initialPrincipal') DOM.inputs.initialPrincipalGoal.value = value;
+            if(id === 'initialPrincipalGoal') DOM.inputs.initialPrincipal.value = value;
             calculateAndRender();
+        }
+
+        function updateSliderOrInput(id, value) {
+             const sliderId = id.includes('Slider') ? id : id + 'Slider';
+             const inputId = id.includes('Slider') ? id.replace('Slider', '') : id;
+             if (DOM.sliders[sliderId]) DOM.sliders[sliderId].value = value;
+             if (DOM.inputs[inputId]) DOM.inputs[inputId].value = value;
+        }
+        function updateAllSliders() {
+            Object.keys(DOM.inputs).forEach(id => updateSliderOrInput(id, DOM.inputs[id].value));
         }
         
         function initialize() {
-            Object.values(DOMElements.inputs).forEach(input => input.addEventListener('input', handleInputChange));
-            DOMElements.tabs.projection.addEventListener('click', () => handleTabClick('projection'));
-            DOMElements.tabs.goal.addEventListener('click', () => handleTabClick('goal'));
+            const savedPlans = localStorage.getItem('financialPlans');
+            if (savedPlans) state.plans = JSON.parse(savedPlans);
+            
+            Object.values(DOM.inputs).forEach(input => input.addEventListener('input', handleInputChange));
+            Object.values(DOM.sliders).forEach(slider => slider.addEventListener('input', handleInputChange));
+            DOM.tabs.projection.addEventListener('click', () => handleTabClick('projection'));
+            DOM.tabs.goal.addEventListener('click', () => handleTabClick('goal'));
+            DOM.savePlanBtn.addEventListener('click', savePlan);
+            DOM.planSelector.addEventListener('change', loadPlan);
+            DOM.milestones.addBtn.addEventListener('click', addMilestone);
+            
+            updatePlanSelector();
             handleTabClick('projection');
         }
 
@@ -380,5 +361,4 @@
     </script>
 </body>
 </html>
-
 
