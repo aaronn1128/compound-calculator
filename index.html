@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>複利計算機</title>
+    <title>複利計算機 (優化版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,6 +20,47 @@
             font-weight: 700;
             font-size: 1.75rem; /* 28px */
             line-height: 2.25rem; /* 36px */
+            transition: color 0.4s ease;
+        }
+        /* 動畫效果：當數字更新時會短暫閃爍 */
+        .value-update {
+            animation: pulse-light 0.7s ease-out;
+        }
+        @keyframes pulse-light {
+            0% { color: #4f46e5; transform: scale(1); }
+            50% { color: #818cf8; transform: scale(1.05); }
+            100% { color: #4f46e5; transform: scale(1); }
+        }
+        /* 客製化滑桿樣式 */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4f46e5;
+            cursor: pointer;
+            border-radius: 50%;
         }
         /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar {
@@ -43,15 +84,15 @@
         <!-- Input Section -->
         <div class="flex flex-col">
             <h1 class="text-2xl md:text-3xl font-bold text-slate-800">複利計算機</h1>
-            <p class="mt-2 text-slate-500">輸入您的投資參數，探索複利的驚人力量。</p>
+            <p class="mt-2 text-slate-500">即時調整參數，探索複利的驚人力量。</p>
 
-            <div class="mt-8 space-y-5">
+            <div class="mt-8 space-y-6">
                 <!-- 初始本金 -->
                 <div>
                     <label for="initialPrincipal" class="text-sm font-medium text-slate-700">初始本金 (元)</label>
                     <div class="mt-1 relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span>
-                        <input type="number" id="initialPrincipal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="例如: 100000" value="100000">
+                        <input type="number" id="initialPrincipal" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="例如: 100000" value="100000">
                     </div>
                 </div>
 
@@ -60,7 +101,7 @@
                     <label for="monthlyContribution" class="text-sm font-medium text-slate-700">每月投入 (元)</label>
                     <div class="mt-1 relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span>
-                        <input type="number" id="monthlyContribution" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="例如: 5000" value="5000">
+                        <input type="number" id="monthlyContribution" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="例如: 5000" value="5000">
                     </div>
                 </div>
 
@@ -69,8 +110,9 @@
                     <label for="annualRate" class="text-sm font-medium text-slate-700">年化報酬率 (%)</label>
                     <div class="mt-1 relative">
                         <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">%</span>
-                        <input type="number" id="annualRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="例如: 7" value="7">
+                        <input type="number" id="annualRate" min="0" max="50" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="例如: 7" value="7">
                     </div>
+                    <input type="range" id="annualRateSlider" min="0" max="50" step="0.5" value="7" class="mt-2">
                 </div>
 
                 <!-- 投資年限 -->
@@ -78,14 +120,12 @@
                     <label for="years" class="text-sm font-medium text-slate-700">投資年限 (年)</label>
                     <div class="mt-1 relative">
                         <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400">年</span>
-                        <input type="number" id="years" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="例如: 20" value="20">
+                        <input type="number" id="years" min="1" max="100" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="例如: 20" value="20">
                     </div>
+                    <input type="range" id="yearsSlider" min="1" max="100" step="1" value="20" class="mt-2">
                 </div>
             </div>
-
-            <button id="calculateBtn" class="mt-8 w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 transform hover:-translate-y-0.5">
-                開始計算
-            </button>
+            <!-- 計算按鈕已被移除，改為即時更新 -->
         </div>
 
         <!-- Result and Chart Section -->
@@ -119,7 +159,9 @@
         const monthlyContributionEl = document.getElementById('monthlyContribution');
         const annualRateEl = document.getElementById('annualRate');
         const yearsEl = document.getElementById('years');
-        const calculateBtn = document.getElementById('calculateBtn');
+        const annualRateSlider = document.getElementById('annualRateSlider');
+        const yearsSlider = document.getElementById('yearsSlider');
+
         const futureValueEl = document.getElementById('futureValue');
         const totalPrincipalEl = document.getElementById('totalPrincipal');
         const totalInterestEl = document.getElementById('totalInterest');
@@ -128,7 +170,7 @@
         let growthChart;
 
         // Chart Configuration
-        function createOrUpdateChart(labels, principalData, interestData) {
+        function createOrUpdateChart(labels, principalData, futureValueData) {
             if (growthChart) {
                 growthChart.destroy();
             }
@@ -143,15 +185,15 @@
                             backgroundColor: 'rgba(100, 116, 139, 0.2)',
                             borderColor: 'rgb(100, 116, 139)',
                             fill: true,
-                            tension: 0.1
+                            tension: 0.2
                         },
                         {
                             label: '累積總額 (含利息)',
-                            data: interestData,
+                            data: futureValueData,
                             backgroundColor: 'rgba(79, 70, 229, 0.2)',
                             borderColor: 'rgb(79, 70, 229)',
                             fill: true,
-                            tension: 0.1
+                            tension: 0.2
                         }
                     ]
                 },
@@ -163,8 +205,8 @@
                             beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
-                                    if (value >= 1000000) return (value / 1000000) + 'M';
-                                    if (value >= 1000) return (value / 1000) + 'K';
+                                    if (value >= 100000000) return (value / 100000000) + '億';
+                                    if (value >= 10000) return (value / 10000) + '萬';
                                     return value;
                                 }
                             }
@@ -196,17 +238,23 @@
                 }
             });
         }
+        
+        // Helper function to animate value changes
+        function animateValue(element) {
+            element.classList.add('value-update');
+            element.addEventListener('animationend', () => {
+                element.classList.remove('value-update');
+            }, { once: true });
+        }
 
         // Calculation Logic
         function calculateCompoundInterest() {
-            // 1. Get and parse input values
             const P = parseFloat(initialPrincipalEl.value) || 0;
             const PMT = parseFloat(monthlyContributionEl.value) || 0;
             const r = (parseFloat(annualRateEl.value) || 0) / 100;
             const t = parseInt(yearsEl.value) || 0;
-            const n = 12; // Compounded monthly
+            const n = 12;
 
-            // 2. Prepare for calculation and chart data
             let futureValue = P;
             let totalPrincipal = P;
             const monthlyRate = r / n;
@@ -216,13 +264,12 @@
             const principalData = [P];
             const futureValueData = [P];
 
-            // 3. Loop through each month to calculate growth
             for (let month = 1; month <= totalMonths; month++) {
                 futureValue = futureValue * (1 + monthlyRate) + PMT;
                 totalPrincipal += PMT;
 
-                if (month % n === 0) {
-                    const currentYear = month / n;
+                if (month % n === 0 || month === totalMonths) {
+                    const currentYear = Math.ceil(month / n);
                     labels.push(`第${currentYear}年`);
                     principalData.push(totalPrincipal);
                     futureValueData.push(futureValue);
@@ -231,7 +278,6 @@
 
             const totalInterest = futureValue - totalPrincipal;
 
-            // 4. Format and display results
             const formatter = new Intl.NumberFormat('zh-TW', {
                 style: 'currency',
                 currency: 'TWD',
@@ -241,18 +287,40 @@
             futureValueEl.textContent = formatter.format(futureValue);
             totalPrincipalEl.textContent = formatter.format(totalPrincipal);
             totalInterestEl.textContent = formatter.format(totalInterest);
-
-            // 5. Update chart
+            
+            // Trigger animations
+            animateValue(futureValueEl);
+            
             createOrUpdateChart(labels, principalData, futureValueData);
         }
 
-        // Event Listeners
-        calculateBtn.addEventListener('click', calculateCompoundInterest);
+        // Event Listeners for instant calculation
+        const inputs = [initialPrincipalEl, monthlyContributionEl, annualRateEl, yearsEl, annualRateSlider, yearsSlider];
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                // Sync sliders and number inputs
+                if (input.id === 'annualRateSlider') {
+                    annualRateEl.value = input.value;
+                } else if (input.id === 'annualRate') {
+                    annualRateSlider.value = input.value;
+                } else if (input.id === 'yearsSlider') {
+                    yearsEl.value = input.value;
+                } else if (input.id === 'years') {
+                    yearsSlider.value = input.value;
+                }
+                calculateCompoundInterest();
+            });
+        });
         
         // Initial Calculation on Page Load
         window.addEventListener('load', () => {
             calculateCompoundInterest();
         });
+
+    </script>
+</body>
+</html>
+
 
     </script>
 </body>
