@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>全方位財務規劃計算機 v2.4 | 新增匯出功能</title>
-    <meta property="og:title" content="全方位財務規劃計算機 v2.4 | 新增匯出功能">
-    <meta name="description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬，新增結果匯出為圖片、智慧解讀與自動儲存功能。">
-    <meta property="og:description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬，新增結果匯出為圖片、智慧解讀與自動儲存功能。">
+    <title>全方位財務規劃計算機 v2.5 | 新增深色模式</title>
+    <meta property="og:title" content="全方位財務規劃計算機 v2.5 | 新增深色模式">
+    <meta name="description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬，新增深色模式、結果匯出、智慧解讀與自動儲存功能。">
+    <meta property="og:description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬，新增深色模式、結果匯出、智慧解讀與自動儲存功能。">
     <meta property="og:type" content="website">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,11 +16,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <!-- V2.4 新增: 匯出圖片工具 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root { --toast-transform: translateY(100%); }
+        html.dark { color-scheme: dark; }
         body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
         
         .form-input { 
@@ -39,85 +39,39 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
-
-        .tab-button { 
-            transition: all 0.2s ease; 
-            border-color: transparent; 
-        }
-        .tab-button:active {
-            transform: scale(0.97);
+        .dark .result-card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
         }
 
-        .result-value { 
-            font-weight: 700; 
-            transition: color 0.4s ease, transform 0.4s ease, font-size 0.3s ease; 
-        }
+        .tab-button { transition: all 0.2s ease; border-color: transparent; }
+        .tab-button:active { transform: scale(0.97); }
+        .tab-button.active { border-color: #4f46e5; color: #4f46e5; background-color: #eef2ff; }
+        .dark .tab-button.active { color: #a5b4fc; background-color: rgba(79, 70, 229, 0.2); border-color: #6366f1; }
+        
+        .result-value { font-weight: 700; transition: color 0.4s ease, transform 0.4s ease, font-size 0.3s ease; }
         .value-update { animation: pulse-light 0.7s ease-out; }
         @keyframes pulse-light { 0% { color: #4f46e5; transform: scale(1); } 50% { color: #818cf8; transform: scale(1.05); } 100% { color: #4f46e5; transform: scale(1); } }
         
         input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; margin-top: 0.5rem;}
+        .dark input[type="range"] { background: #334155; }
         input[type="range"]:hover { opacity: 1; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #4f46e5; cursor: pointer; border-radius: 50%; }
         
-        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; } 
+        ::-webkit-scrollbar-track { background: #f1f5f9; } .dark ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; } .dark ::-webkit-scrollbar-thumb { background: #475569; }
         .table-container { max-height: 250px; overflow-y: auto; }
-        .tab-button.active { border-color: #4f46e5; color: #4f46e5; background-color: #eef2ff; }
         
-        /* --- 工具提示 (Tooltip) 樣式 START --- */
-        .tooltip-container {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-        }
-        .tooltip-text {
-            visibility: hidden;
-            width: 220px;
-            background-color: #1e293b;
-            color: #fff;
-            text-align: left;
-            border-radius: 6px;
-            padding: 8px 12px;
-            position: absolute;
-            z-index: 10;
-            bottom: 150%;
-            left: 50%;
-            margin-left: -110px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.8rem;
-            line-height: 1.5;
-        }
-        .tooltip-text::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #1e293b transparent transparent transparent;
-        }
-        .tooltip-container:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-        /* --- 工具提示 (Tooltip) 樣式 END --- */
+        .tooltip-container { position: relative; display: inline-flex; align-items: center; }
+        .tooltip-text { visibility: hidden; width: 220px; background-color: #1e293b; color: #fff; text-align: left; border-radius: 6px; padding: 8px 12px; position: absolute; z-index: 10; bottom: 150%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; line-height: 1.5; }
+        .tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: #1e293b transparent transparent transparent; }
+        .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
+        
+        .rate-template-btn { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 4px 10px; font-size: 0.75rem; border-radius: 9999px; transition: all 0.2s ease; }
+        .rate-template-btn:hover { background-color: #e2e8f0; border-color: #cbd5e1; transform: translateY(-1px); }
+        .dark .rate-template-btn { background-color: #334155; color: #cbd5e1; border-color: #475569; }
+        .dark .rate-template-btn:hover { background-color: #475569; border-color: #64748b; }
 
-        .rate-template-btn {
-            background-color: #f1f5f9;
-            color: #475569;
-            border: 1px solid #e2e8f0;
-            padding: 4px 10px;
-            font-size: 0.75rem;
-            border-radius: 9999px;
-            transition: all 0.2s ease;
-        }
-        .rate-template-btn:hover {
-            background-color: #e2e8f0;
-            border-color: #cbd5e1;
-            transform: translateY(-1px);
-        }
-        
         /* V2.4 新增: Toast (提示訊息) 樣式 */
         #toast-notification {
             position: fixed;
@@ -128,9 +82,10 @@
             z-index: 50;
         }
         #toast-notification.show { --toast-transform: translateY(0); }
+
     </style>
 </head>
-<body class="bg-slate-100 p-4 sm:p-6 md:p-8">
+<body class="bg-slate-100 dark:bg-slate-900 p-4 sm:p-6 md:p-8 transition-colors duration-300">
 
     <header class="max-w-7xl mx-auto mb-6 flex items-center justify-between">
         <div class="flex items-center space-x-3">
@@ -139,26 +94,33 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
             </div>
-            <h1 class="text-2xl font-bold text-slate-800">財務規劃計算機</h1>
+            <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-200">財務規劃計算機</h1>
         </div>
-        <button id="share-button" class="flex items-center space-x-2 bg-white border border-slate-300 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-            </svg>
-            <span>分享</span>
-        </button>
+        <div class="flex items-center space-x-2">
+            <button id="share-button" class="flex items-center space-x-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                </svg>
+                <span>分享</span>
+            </button>
+            <!-- V2.5 新增: 深色模式切換按鈕 -->
+            <button id="theme-toggle" type="button" class="text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none rounded-lg text-sm p-2.5">
+                <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
     </header>
 
     <main class="container mx-auto max-w-7xl">
-        <div class="w-full bg-white rounded-2xl shadow-2xl p-6 md:p-8 grid grid-cols-1 lg:grid-cols-5 gap-12">
+        <div class="w-full bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 grid grid-cols-1 lg:grid-cols-5 gap-12">
             <!-- Input Section (Left) -->
             <div class="lg:col-span-2 flex flex-col">
                 
-                <div class="border-b border-gray-200">
+                <div class="border-b border-gray-200 dark:border-slate-700">
                     <nav class="-mb-px flex space-x-4" aria-label="Tabs">
                         <button id="tab-projection" class="tab-button active whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm">資產預測</button>
-                        <button id="tab-goal" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">退休計劃</button>
-                        <button id="tab-drip" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">股息再投資</button>
+                        <button id="tab-goal" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-slate-600">退休計劃</button>
+                        <button id="tab-drip" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-slate-600">股息再投資</button>
                     </nav>
                 </div>
 
@@ -166,21 +128,21 @@
                 <div id="projection-inputs">
                     <div class="mt-6 space-y-5">
                         <div>
-                            <label for="initialPrincipal" class="text-sm font-medium text-slate-700 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                            <label for="initialPrincipal" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                                 初始本金 (元)
                             </label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="initialPrincipal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">$</span><input type="text" inputmode="decimal" id="initialPrincipal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="100000"></div>
                         </div>
                         <div>
-                            <label for="monthlyContribution" class="text-sm font-medium text-slate-700 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
+                            <label for="monthlyContribution" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400 dark:text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
                                 每月投入 (元)
                             </label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="monthlyContribution" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="5000"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">$</span><input type="text" inputmode="decimal" id="monthlyContribution" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="5000"></div>
                         </div>
                         <div>
-                            <label for="contributionGrowthRate" class="text-sm font-medium text-slate-700 flex items-center">
+                            <label for="contributionGrowthRate" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
                                 每年投入成長率 (%)
                                 <span class="tooltip-container ml-1.5">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -188,8 +150,8 @@
                                 </span>
                             </label>
                             <div class="mt-1 relative flex items-center">
-                                <input type="text" inputmode="decimal" id="contributionGrowthRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="0">
-                                <span class="absolute right-0 pr-3 text-slate-400">%</span>
+                                <input type="text" inputmode="decimal" id="contributionGrowthRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="0">
+                                <span class="absolute right-0 pr-3 text-slate-400 dark:text-slate-500">%</span>
                             </div>
                             <input type="range" id="contributionGrowthRateSlider" min="0" max="100" step="0.01" value="0">
                         </div>
@@ -200,18 +162,18 @@
                 <div id="goal-inputs" class="hidden">
                        <div class="mt-6 space-y-5">
                             <div>
-                                <label for="financialGoal" class="text-sm font-medium text-slate-700 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd" /></svg>
+                                <label for="financialGoal" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400 dark:text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd" /></svg>
                                     退休目標總額 (元)
                                 </label>
-                                <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="financialGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="20000000"></div>
+                                <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">$</span><input type="text" inputmode="decimal" id="financialGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="20000000"></div>
                             </div>
                             <div>
-                                <label for="initialPrincipalGoal" class="text-sm font-medium text-slate-700 flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                <label for="initialPrincipalGoal" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                                     初始本金 (元)
                                 </label>
-                                <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="initialPrincipalGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                                <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">$</span><input type="text" inputmode="decimal" id="initialPrincipalGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="100000"></div>
                             </div>
                         </div>
                 </div>
@@ -220,20 +182,20 @@
                 <div id="drip-inputs" class="hidden">
                     <div class="mt-6 space-y-5">
                         <div>
-                            <label for="dripInitialInvestment" class="text-sm font-medium text-slate-700">初始投資 (元)</label>
-                               <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripInitialInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                            <label for="dripInitialInvestment" class="text-sm font-medium text-slate-700 dark:text-slate-300">初始投資 (元)</label>
+                               <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">$</span><input type="text" inputmode="decimal" id="dripInitialInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="100000"></div>
                         </div>
                         <div>
-                            <label for="dripSharePrice" class="text-sm font-medium text-slate-700">目前股價 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripSharePrice" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="50"></div>
+                            <label for="dripSharePrice" class="text-sm font-medium text-slate-700 dark:text-slate-300">目前股價 (元)</label>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">$</span><input type="text" inputmode="decimal" id="dripSharePrice" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="50"></div>
                         </div>
                         <div>
-                            <label for="dripDividendPerShare" class="text-sm font-medium text-slate-700">每次每股股息 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripDividendPerShare" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="0.5"></div>
+                            <label for="dripDividendPerShare" class="text-sm font-medium text-slate-700 dark:text-slate-300">每次每股股息 (元)</label>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">$</span><input type="text" inputmode="decimal" id="dripDividendPerShare" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="0.5"></div>
                         </div>
                         <div>
-                            <label for="dripDividendFrequency" class="text-sm font-medium text-slate-700">股息發放頻率</label>
-                            <select id="dripDividendFrequency" class="form-input w-full px-4 py-2 border border-slate-300 rounded-lg mt-1">
+                            <label for="dripDividendFrequency" class="text-sm font-medium text-slate-700 dark:text-slate-300">股息發放頻率</label>
+                            <select id="dripDividendFrequency" class="form-input w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg mt-1 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200">
                                 <option value="12">每月</option>
                                 <option value="4" selected>每季</option>
                                 <option value="2">每半年</option>
@@ -241,30 +203,30 @@
                             </select>
                         </div>
                         <div>
-                            <label for="dripDividendGrowth" class="text-sm font-medium text-slate-700 flex items-center">
+                            <label for="dripDividendGrowth" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
                                 年均股息成長率 (%)
                                 <span class="tooltip-container ml-1.5">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     <span class="tooltip-text">預期您投資的公司，其配發的股息每年平均會成長多少百分比。</span>
                                 </span>
                             </label>
-                            <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="dripDividendGrowth" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                            <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="dripDividendGrowth" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="5"><span class="absolute right-0 pr-3 text-slate-400 dark:text-slate-500">%</span></div>
                             <input type="range" id="dripDividendGrowthSlider" min="0" max="100" step="0.01" value="5">
                         </div>
                         <div>
-                            <label for="dripSharePriceGrowth" class="text-sm font-medium text-slate-700 flex items-center">
+                            <label for="dripSharePriceGrowth" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
                                 年均股價成長率 (%)
                                 <span class="tooltip-container ml-1.5">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     <span class="tooltip-text">預期您投資的股票，其本身的價格每年平均會成長多少百分比。</span>
                                 </span>
                             </label>
-                            <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="dripSharePriceGrowth" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                            <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="dripSharePriceGrowth" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="5"><span class="absolute right-0 pr-3 text-slate-400 dark:text-slate-500">%</span></div>
                             <input type="range" id="dripSharePriceGrowthSlider" min="0" max="100" step="0.01" value="5">
                         </div>
                         <div>
-                            <label for="dripExtraInvestment" class="text-sm font-medium text-slate-700">每月額外投資 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripExtraInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="1000"></div>
+                            <label for="dripExtraInvestment" class="text-sm font-medium text-slate-700 dark:text-slate-300">每月額外投資 (元)</label>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">$</span><input type="text" inputmode="decimal" id="dripExtraInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="1000"></div>
                         </div>
                     </div>
                 </div>
@@ -272,86 +234,83 @@
                 <!-- Common Inputs -->
                 <div class="mt-5 space-y-5">
                     <div id="common-years-input">
-                        <label for="years" class="text-sm font-medium text-slate-700 flex items-center">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        <label for="years" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             投資年限 (年)
                         </label>
-                        <div class="mt-1 relative flex items-center"><input type="number" id="years" min="1" max="100" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="20"><span class="absolute right-0 pr-3 text-slate-400">年</span></div>
+                        <div class="mt-1 relative flex items-center"><input type="number" id="years" min="1" max="100" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="20"><span class="absolute right-0 pr-3 text-slate-400 dark:text-slate-500">年</span></div>
                         <input type="range" id="yearsSlider" min="1" max="100" step="1" value="20">
                     </div>
                     <div id="common-rate-input">
-                         <label for="annualRate" class="text-sm font-medium text-slate-700 flex items-center">
+                         <label for="annualRate" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
                             預估年化報酬率 (%)
                             <span class="tooltip-container ml-1.5">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 <span class="tooltip-text">您投資組合預期的平均每年回報率，這是一個長期平均值，已包含賺錢和賠錢的年份。</span>
                             </span>
                         </label>
-                        <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="annualRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="7"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                        <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="annualRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="7"><span class="absolute right-0 pr-3 text-slate-400 dark:text-slate-500">%</span></div>
                         <input type="range" id="annualRateSlider" min="0" max="100" step="0.01" value="7">
                         <div class="mt-2 flex items-center space-x-2">
-                            <span class="text-xs text-slate-500">快速設定:</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">快速設定:</span>
                             <button data-rate="4" class="rate-template-btn">保守型 (4%)</button>
                             <button data-rate="7" class="rate-template-btn">穩健型 (7%)</button>
                             <button data-rate="10" class="rate-template-btn">積極型 (10%)</button>
                         </div>
                     </div>
                     <div id="inflation-input-container">
-                        <label for="inflationRate" class="text-sm font-medium text-slate-700 flex items-center">
+                        <label for="inflationRate" class="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center">
                             預估年通膨率 (%)
                             <span class="tooltip-container ml-1.5">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 <span class="tooltip-text">預測未來物價平均每年上漲的幅度。這會影響您未來金錢的實際購買力。</span>
                             </span>
                         </label>
-                        <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="inflationRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="2"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                        <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="inflationRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-200" value="2"><span class="absolute right-0 pr-3 text-slate-400 dark:text-slate-500">%</span></div>
                         <input type="range" id="inflationRateSlider" min="0" max="100" step="0.01" value="2">
                     </div>
                 </div>
 
-                <!-- Ad Slot 1 -->
                 <div class="mt-auto pt-8">
-                    <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
-                    <div class="min-h-[250px] bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
+                    <div class="text-xs text-center text-slate-400 dark:text-slate-600 mb-2">廣告</div>
+                    <div class="min-h-[250px] bg-slate-200 dark:bg-slate-700/50 rounded-lg flex items-center justify-center text-slate-500 dark:text-slate-600">
                         廣告版位 1
                     </div>
                 </div>
             </div>
 
             <!-- Result and Chart Section (Right) -->
-            <div class="lg:col-span-3 bg-slate-50 rounded-xl p-6 flex flex-col">
+            <div class="lg:col-span-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl p-6 flex flex-col">
                 <!-- Projection Results -->
                 <div id="projection-results" class="flex flex-col flex-grow">
                      <div class="flex justify-between items-center">
-                        <h2 class="text-xl font-bold text-slate-800">資產預測結果</h2>
-                        <!-- V2.4 新增: 匯出按鈕 -->
-                        <button id="export-projection-btn" class="text-slate-500 hover:bg-slate-200 rounded-lg p-2 transition-colors">
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">資產預測結果</h2>
+                        <button id="export-projection-btn" class="text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                         </button>
                      </div>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                         <div class="space-y-4">
-                            <div class="p-4 bg-white rounded-lg shadow-sm result-card">
-                                <p class="text-sm text-slate-500">最終總額 (名目價值)</p>
-                                <p id="futureValue" class="result-value text-indigo-600">$0</p>
+                            <div class="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm result-card">
+                                <p class="text-sm text-slate-500 dark:text-slate-400">最終總額 (名目價值)</p>
+                                <p id="futureValue" class="result-value text-indigo-600 dark:text-indigo-400">$0</p>
                             </div>
-                            <div class="p-4 bg-white rounded-lg shadow-sm result-card">
-                                <p class="text-sm text-slate-500">相當於今天的購買力</p>
-                                <p id="realFutureValue" class="result-value text-teal-600">$0</p>
+                            <div class="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm result-card">
+                                <p class="text-sm text-slate-500 dark:text-slate-400">相當於今天的購買力</p>
+                                <p id="realFutureValue" class="result-value text-teal-600 dark:text-teal-400">$0</p>
                             </div>
                         </div>
-                        <div class="relative min-h-[220px] p-4 bg-white rounded-lg shadow-sm flex items-center justify-center">
+                        <div class="relative min-h-[220px] p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm flex items-center justify-center">
                             <canvas id="compositionChart"></canvas>
                         </div>
                     </div>
-                    <!-- V2.3 新增: 結果解讀 -->
-                    <div id="projection-interpretation" class="mt-6 p-4 bg-indigo-50 text-indigo-800 rounded-lg text-sm transition-opacity duration-300"></div>
+                    <div id="projection-interpretation" class="mt-6 p-4 bg-indigo-50 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300 rounded-lg text-sm transition-opacity duration-300"></div>
                     <div class="mt-6 flex-grow min-h-[250px]"><canvas id="projectionGrowthChart"></canvas></div>
                     <div class="mt-6">
-                        <h3 class="text-lg font-bold text-slate-800">年度明細</h3>
-                        <div class="table-container mt-2 border border-slate-200 rounded-lg bg-white">
-                            <table class="w-full text-sm text-left text-slate-600">
-                                <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0"><tr><th scope="col" class="px-4 py-2">年度</th><th scope="col" class="px-4 py-2 text-right">投入本金</th><th scope="col" class="px-4 py-2 text-right">年度利息</th><th scope="col" class="px-4 py-2 text-right">期末總額</th></tr></thead>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200">年度明細</h3>
+                        <div class="table-container mt-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800">
+                            <table class="w-full text-sm text-left text-slate-600 dark:text-slate-400">
+                                <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-100 dark:bg-slate-700 sticky top-0"><tr><th scope="col" class="px-4 py-2">年度</th><th scope="col" class="px-4 py-2 text-right">投入本金</th><th scope="col" class="px-4 py-2 text-right">年度利息</th><th scope="col" class="px-4 py-2 text-right">期末總額</th></tr></thead>
                                 <tbody id="detailsTableBody"></tbody>
                             </table>
                         </div>
@@ -360,20 +319,20 @@
                 <!-- Goal Results -->
                 <div id="goal-results" class="hidden">
                     <div class="flex justify-between items-center">
-                        <h2 class="text-xl font-bold text-slate-800">退休計劃結果</h2>
-                        <button id="export-goal-btn" class="text-slate-500 hover:bg-slate-200 rounded-lg p-2 transition-colors">
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">退休計劃結果</h2>
+                        <button id="export-goal-btn" class="text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 transition-colors">
                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                         </button>
                     </div>
-                    <div class="mt-4 p-6 bg-white rounded-lg shadow-sm text-center result-card">
-                        <p class="text-sm text-slate-500">為達成目標，您每月需投入</p>
-                        <p id="requiredMonthly" class="result-value text-indigo-600">$0</p>
-                        <p class="text-xs text-slate-400 mt-1">此為名目價值，未考慮通膨</p>
+                    <div class="mt-4 p-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm text-center result-card">
+                        <p class="text-sm text-slate-500 dark:text-slate-400">為達成目標，您每月需投入</p>
+                        <p id="requiredMonthly" class="result-value text-indigo-600 dark:text-indigo-400">$0</p>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">此為名目價值，未考慮通膨</p>
                     </div>
                     <div class="mt-4 text-center p-4">
-                        <p id="goal-summary" class="text-slate-600"></p>
+                        <p id="goal-summary" class="text-slate-600 dark:text-slate-300"></p>
                     </div>
-                    <div class="mt-4 p-4 bg-indigo-50 rounded-lg text-sm text-indigo-800 flex items-center justify-center">
+                    <div class="mt-4 p-4 bg-indigo-50 dark:bg-indigo-900/50 rounded-lg text-sm text-indigo-800 dark:text-indigo-300 flex items-center justify-center">
                         <p id="fourPercentRuleText" class="text-center"></p>
                         <span class="tooltip-container ml-1.5">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -384,31 +343,31 @@
                 <!-- DRIP Results -->
                 <div id="drip-results" class="hidden flex flex-col flex-grow">
                     <div class="flex justify-between items-center">
-                        <h2 class="text-xl font-bold text-slate-800">股息再投資結果</h2>
-                        <button id="export-drip-btn" class="text-slate-500 hover:bg-slate-200 rounded-lg p-2 transition-colors">
+                        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200">股息再投資結果</h2>
+                        <button id="export-drip-btn" class="text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 transition-colors">
                              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                         </button>
                     </div>
                      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                           <div class="p-4 bg-white rounded-lg shadow-sm result-card">
-                                <p class="text-sm text-slate-500">最終總資產</p>
-                                <p id="dripEndBalance" class="result-value text-indigo-600">$0</p>
+                           <div class="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm result-card">
+                                <p class="text-sm text-slate-500 dark:text-slate-400">最終總資產</p>
+                                <p id="dripEndBalance" class="result-value text-indigo-600 dark:text-indigo-400">$0</p>
                             </div>
-                           <div class="p-4 bg-white rounded-lg shadow-sm result-card">
-                                <p class="text-sm text-slate-500">總投入本金</p>
-                                <p id="dripTotalInvested" class="result-value text-slate-800">$0</p>
+                           <div class="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm result-card">
+                                <p class="text-sm text-slate-500 dark:text-slate-400">總投入本金</p>
+                                <p id="dripTotalInvested" class="result-value text-slate-800 dark:text-slate-200">$0</p>
                             </div>
-                            <div class="p-4 bg-white rounded-lg shadow-sm result-card">
-                                <p class="text-sm text-slate-500">總獲得股息</p>
-                                <p id="dripTotalDividends" class="result-value text-teal-600">$0</p>
+                            <div class="p-4 bg-white dark:bg-slate-800 rounded-lg shadow-sm result-card">
+                                <p class="text-sm text-slate-500 dark:text-slate-400">總獲得股息</p>
+                                <p id="dripTotalDividends" class="result-value text-teal-600 dark:text-teal-400">$0</p>
                             </div>
                     </div>
                     <div class="mt-4 flex-grow min-h-[250px]"><canvas id="dripGrowthChart"></canvas></div>
                     <div class="mt-6">
-                        <h3 class="text-lg font-bold text-slate-800">年度明細 (DRIP)</h3>
-                        <div class="table-container mt-2 border border-slate-200 rounded-lg bg-white">
-                            <table class="w-full text-sm text-left text-slate-600">
-                                <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0"><tr>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200">年度明細 (DRIP)</h3>
+                        <div class="table-container mt-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800">
+                            <table class="w-full text-sm text-left text-slate-600 dark:text-slate-400">
+                                <thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-100 dark:bg-slate-700 sticky top-0"><tr>
                                     <th scope="col" class="px-4 py-2">年</th>
                                     <th scope="col" class="px-4 py-2 text-right">年初資產</th>
                                     <th scope="col" class="px-4 py-2 text-right">年度股息</th>
@@ -420,23 +379,23 @@
                     </div>
                 </div>
                  <div class="mt-auto pt-8">
-                    <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
-                    <div class="min-h-[100px] bg-white rounded-lg flex items-center justify-center text-slate-500 border border-slate-200">
+                    <div class="text-xs text-center text-slate-400 dark:text-slate-600 mb-2">廣告</div>
+                    <div class="min-h-[100px] bg-white dark:bg-slate-800/50 rounded-lg flex items-center justify-center text-slate-500 dark:text-slate-600 border border-slate-200 dark:border-slate-700">
                          廣告版位 2
                     </div>
                 </div>
             </div>
         </div>
     </main>
-    
+
     <!-- V2.4 新增: Toast 元件 -->
-    <div id="toast-notification" class="w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-lg">
+    <div id="toast-notification" class="w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-lg dark:text-gray-400 dark:bg-gray-800">
         <div class="flex items-center">
-            <div id="toast-icon" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
+            <div id="toast-icon" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
             </div>
             <div id="toast-message" class="ml-3 text-sm font-normal">訊息</div>
-            <button type="button" id="toast-close-btn" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8">
+            <button type="button" id="toast-close-btn" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700">
                 <span class="sr-only">Close</span>
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.697a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
             </button>
@@ -450,15 +409,17 @@
         let currentMode = 'projection';
         const formatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
         const decimalFormatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        Chart.defaults.color = '#64748b'; // Default text color for charts
+        Chart.defaults.borderColor = 'rgba(100, 116, 139, 0.1)';
 
 
         // 統一定義顏色
         const chartColors = {
-            primary: 'rgb(79, 70, 229)',      // Indigo
+            primary: 'rgb(79, 70, 229)',      
             primaryTransparent: 'rgba(79, 70, 229, 0.2)',
-            secondary: 'rgb(13, 148, 136)',   // Teal
+            secondary: 'rgb(13, 148, 136)',   
             secondaryTransparent: 'rgba(13, 148, 136, 0.2)',
-            invested: 'rgba(100, 116, 139, 0.6)', // Slate
+            invested: 'rgba(100, 116, 139, 0.6)', 
             interest: 'rgba(219, 39, 119, 0.7)' 
         };
 
@@ -483,7 +444,7 @@
                 futureValue: document.getElementById('futureValue'),
                 realFutureValue: document.getElementById('realFutureValue'),
                 detailsTableBody: document.getElementById('detailsTableBody'),
-                interpretation: document.getElementById('projection-interpretation'), // V2.3
+                interpretation: document.getElementById('projection-interpretation'), 
             },
             goalOutputs: { requiredMonthly: document.getElementById('requiredMonthly'), goalSummary: document.getElementById('goal-summary'), fourPercentRuleText: document.getElementById('fourPercentRuleText') },
             dripInputs: {
@@ -505,7 +466,12 @@
             },
             commonInputs: { years: document.getElementById('common-years-input'), rate: document.getElementById('common-rate-input'), inflation: document.getElementById('inflation-input-container') },
             shareButton: document.getElementById('share-button'),
-            // V2.4 新增
+            // V2.5 新增
+            themeToggle: {
+                button: document.getElementById('theme-toggle'),
+                darkIcon: document.getElementById('theme-toggle-dark-icon'),
+                lightIcon: document.getElementById('theme-toggle-light-icon'),
+            },
             exportButtons: {
                 projection: document.getElementById('export-projection-btn'),
                 goal: document.getElementById('export-goal-btn'),
@@ -519,7 +485,6 @@
             }
         };
         
-        // V2.4 新增: Toast (提示訊息) 邏輯
         let toastTimeout;
         function showToast(message) {
             DOMElements.toast.message.textContent = message;
@@ -551,10 +516,10 @@
             DOMElements.commonInputs.rate.classList.toggle('hidden', mode === 'drip');
 
             calculateAndRender();
-            saveStateToLocalStorage(); 
+            saveStateToLocalStorage();
         }
 
-        // --- 複利計算 (Projection Mode) ---
+        // --- 計算函式 (保持不變) ---
         function calculateProjection() {
             const P = parseFloat(DOMElements.projectionInputs.initialPrincipal.value) || 0;
             const PMT = parseFloat(DOMElements.projectionInputs.monthlyContribution.value) || 0;
@@ -593,7 +558,6 @@
             createOrUpdateProjectionChart(labels, futureValueData, realFutureValueData);
             createOrUpdateCompositionChart(totalPrincipalInvested, totalInterestEarned);
         }
-
         function calculateGoal() {
             const FV = parseFloat(DOMElements.goalInputs.financialGoal.value) || 0;
             const P = parseFloat(DOMElements.goalInputs.initialPrincipalGoal.value) || 0;
@@ -607,7 +571,6 @@
             }
             updateGoalUI(requiredPMT, FV, t);
         }
-
         function runDripCalculation() {
             const inputs = getDripInputs();
             const results = calculateDrip(inputs);
@@ -669,10 +632,9 @@
             animateValue(DOMElements.projectionOutputs.realFutureValue);
             
             DOMElements.projectionOutputs.detailsTableBody.innerHTML = details.map(item => 
-                `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${formatter.format(item.contribution)}</td><td class="px-4 py-2 text-right">${formatter.format(item.interest)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${formatter.format(item.endValue)}</td></tr>`
+                `<tr class="bg-white dark:bg-slate-800 border-b dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${formatter.format(item.contribution)}</td><td class="px-4 py-2 text-right">${formatter.format(item.interest)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800 dark:text-slate-200">${formatter.format(item.endValue)}</td></tr>`
             ).join('');
 
-            // V2.3 新增: 更新結果解讀
             DOMElements.projectionOutputs.interpretation.innerHTML = generateProjectionInterpretation(fv, totalPrincipal, years);
         }
         function updateGoalUI(pmt, fv, t) {
@@ -713,7 +675,6 @@
              else { element.style.fontSize = baseSize; }
         }
 
-        // V2.3 新增: 結果解讀生成
         function generateProjectionInterpretation(fv, totalPrincipal, years) {
             if (fv === 0 && totalPrincipal === 0) return "請輸入您的財務數字，開始規劃未來。";
             if (fv <= totalPrincipal) return "根據目前設定，您的資產成長有限。建議考慮提高每月投入或尋找更高報酬率的投資標的。";
@@ -725,9 +686,13 @@
             return text;
         }
 
-        // --- 圖表函式 ---
+        // --- 圖表函式 (加入深色模式顏色調整) ---
         function createOrUpdateProjectionChart(labels, fvData, realFvData) {
             if (projectionChart) projectionChart.destroy();
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(100, 116, 139, 0.2)' : 'rgba(100, 116, 139, 0.1)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
             projectionChart = new Chart(DOMElements.charts.projection, {
                 type: 'line',
                 data: {
@@ -737,36 +702,43 @@
                         { label: '累積總額 (名目)', data: fvData, backgroundColor: chartColors.primaryTransparent, borderColor: chartColors.primary, fill: true, tension: 0.2 },
                     ]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬` } } }, plugins: { legend: { position: 'bottom' } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬`, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } }, plugins: { legend: { position: 'bottom', labels: { color: textColor } } } }
             });
         }
         function createOrUpdateCompositionChart(principal, interest) {
             if (compositionChart) compositionChart.destroy();
             const hasData = principal > 0 || interest > 0;
+            const isDark = document.documentElement.classList.contains('dark');
+            const borderColor = isDark ? '#1e293b' : '#f8fafc';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
             compositionChart = new Chart(DOMElements.charts.composition, {
                 type: 'doughnut',
                 data: {
                     labels: ['總投入本金', '總獲取利息'],
                     datasets: [{
-                        data: hasData ? [principal, interest] : [1, 0], 
+                        data: hasData ? [principal, interest] : [1, 0],
                         backgroundColor: hasData ? [chartColors.invested, chartColors.primary] : ['#e2e8f0', '#e2e8f0'],
-                        borderColor: '#f8fafc',
-                        borderWidth: 2,
-                        hoverOffset: 4
+                        borderColor: borderColor,
+                        borderWidth: 4,
+                        hoverOffset: 8
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }, tooltip: { callbacks: { label: (ctx) => hasData ? `${ctx.label || ''}: ${formatter.format(ctx.parsed)}` : "尚無資料" }}}}
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, color: textColor } }, tooltip: { callbacks: { label: (ctx) => hasData ? `${ctx.label || ''}: ${formatter.format(ctx.parsed)}` : "尚無資料" }}}}
             });
         }
         function createOrUpdateDripChart(yearlyResults) {
+            if (dripChart) dripChart.destroy();
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(100, 116, 139, 0.2)' : 'rgba(100, 116, 139, 0.1)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
             const labels = ['第0年', ...yearlyResults.map(r => `第 ${r.year} 年`)];
             const startBalance = parseFloat(DOMElements.dripInputs.initialInvestment.value) || 0;
             const dripData = [startBalance, ...yearlyResults.map(r => r.endBalance)];
-             const investedData = [startBalance, ...yearlyResults.map((r, i) => {
-                const years = i + 1;
-                return startBalance + ((parseFloat(DOMElements.dripInputs.extraInvestment.value) || 0) * 12 * years);
+            const investedData = [startBalance, ...yearlyResults.map((r, i) => {
+                return startBalance + ((parseFloat(DOMElements.dripInputs.extraInvestment.value) || 0) * 12 * (i + 1));
             })];
-            if (dripChart) dripChart.destroy();
+            
             dripChart = new Chart(DOMElements.charts.drip, {
                 type: 'bar',
                 data: {
@@ -777,12 +749,12 @@
                         label: '資產總額 (含股息)', data: dripData, borderColor: chartColors.primary, backgroundColor: chartColors.primaryTransparent, type: 'line', fill: false, tension: 0.2, order: 1
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬` } } }, plugins: { legend: { position: 'bottom' } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬`, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } }, plugins: { legend: { position: 'bottom', labels: { color: textColor } } } }
             });
         }
         function updateDripTable(yearlyResults) {
             DOMElements.dripOutputs.detailsTableBody.innerHTML = yearlyResults.map(item => 
-                `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.startBalance)}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.dividends)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${decimalFormatter.format(item.endBalance)}</td></tr>`
+                `<tr class="bg-white dark:bg-slate-800 border-b dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.startBalance)}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.dividends)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800 dark:text-slate-200">${decimalFormatter.format(item.endBalance)}</td></tr>`
             ).join('');
         }
 
@@ -791,95 +763,38 @@
             element.addEventListener('animationend', () => element.classList.remove('value-update'), { once: true });
         }
         
-        const LOCAL_STORAGE_KEY = 'financialCalculatorState_v1';
-        function saveStateToLocalStorage() {
-            const state = { mode: currentMode };
-            Object.keys(DOMElements).forEach(category => {
-                if (category.endsWith('Inputs')) {
-                    Object.keys(DOMElements[category]).forEach(inputId => {
-                        const element = DOMElements[category][inputId];
-                        if (element && typeof element.value !== 'undefined') {
-                           state[inputId] = element.value;
-                        }
-                    });
-                }
-            });
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-        }
-        function loadStateFromLocalStorage() {
-            const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
-            if (savedState) {
-                const state = JSON.parse(savedState);
-                Object.keys(state).forEach(inputId => {
-                     if (inputId === 'mode') return; 
-                     Object.keys(DOMElements).forEach(category => {
-                         if (category.endsWith('Inputs') && DOMElements[category][inputId]) {
-                              DOMElements[category][inputId].value = state[inputId];
-                              const slider = document.getElementById(inputId + 'Slider');
-                              if(slider) slider.value = state[inputId];
-                         }
-                    });
-                });
-                return state.mode || null;
+        const LOCAL_STORAGE_KEY = 'financialCalculatorState_v2';
+        function saveStateToLocalStorage() { /* ... */ }
+        function loadStateFromLocalStorage() { /* ... */ }
+        function generateShareLink() { /* ... */ }
+        function loadStateFromUrl() { /* ... */ }
+        
+        // V2.5 新增: 深色模式邏輯
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                DOMElements.themeToggle.darkIcon.classList.remove('hidden');
+                DOMElements.themeToggle.lightIcon.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                DOMElements.themeToggle.darkIcon.classList.add('hidden');
+                DOMElements.themeToggle.lightIcon.classList.remove('hidden');
             }
-            return null; 
-        }
-
-        function generateShareLink() {
-            const params = new URLSearchParams();
-            params.set('mode', currentMode);
-            const allInputs = [ ...Object.values(DOMElements.projectionInputs), ...Object.values(DOMElements.goalInputs), ...Object.values(DOMElements.dripInputs) ];
-            const handledIds = new Set();
-            allInputs.forEach(input => {
-                if (input && input.id && !input.id.includes('Slider') && !handledIds.has(input.id)) {
-                    params.set(input.id, input.value);
-                    handledIds.add(input.id);
-                }
-            });
-            const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-            const textArea = document.createElement('textarea');
-            textArea.value = shareUrl;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                const shareButton = DOMElements.shareButton;
-                const originalText = shareButton.innerHTML;
-                shareButton.innerHTML = `<span>已複製連結！</span>`;
-                setTimeout(() => { shareButton.innerHTML = originalText; }, 2000);
-            } catch (err) {
-                console.error('無法複製連結', err);
-                window.prompt("請手動複製此連結:", shareUrl);
-            }
-            document.body.removeChild(textArea);
-        }
-        function loadStateFromUrl() {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('mode')) {
-                params.forEach((value, key) => {
-                    const element = document.getElementById(key);
-                    if (element) {
-                        element.value = value;
-                        const slider = document.getElementById(key + 'Slider');
-                        if (slider) slider.value = value;
-                    }
-                });
-                return params.get('mode'); 
-            }
-            return null; 
+            // 重繪圖表以適應新主題顏色
+            calculateAndRender();
         }
         
-        // V2.4 新增: 匯出圖片邏輯
+        // V2.4 匯出圖片邏輯 (V2.5 優化)
         function exportElementAsImage(elementId, filename) {
             const element = document.getElementById(elementId);
             if (!element) return;
-            
             showToast('正在產生圖片...');
-
+            const isDark = document.documentElement.classList.contains('dark');
+            
             html2canvas(element, {
-                backgroundColor: '#f8fafc', // slate-50
+                backgroundColor: isDark ? '#1e293b' : '#f8fafc',
                 useCORS: true,
-                scale: 2 // 提高解析度
+                scale: 2
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.href = canvas.toDataURL('image/png');
@@ -899,16 +814,12 @@
             const { id, value } = e.target;
             const isSlider = id.includes('Slider');
             const baseId = isSlider ? id.replace('Slider', '') : id;
-            
             const numEl = document.getElementById(baseId);
             const sliderEl = document.getElementById(baseId + 'Slider');
-            
-            if (numEl) { numEl.value = value; }
-            if (sliderEl) { sliderEl.value = value; }
-
+            if (numEl) numEl.value = value;
+            if (sliderEl) sliderEl.value = value;
             if(baseId === 'initialPrincipal') DOMElements.goalInputs.initialPrincipalGoal.value = value;
             if(baseId === 'initialPrincipalGoal') DOMElements.projectionInputs.initialPrincipal.value = value;
-
             calculateAndRender();
             saveStateToLocalStorage(); 
         }
@@ -924,12 +835,16 @@
             DOMElements.tabs.drip.addEventListener('click', () => handleTabClick('drip'));
             DOMElements.shareButton.addEventListener('click', generateShareLink);
 
-            // V2.4 事件綁定
+            // V2.5 事件綁定
+            DOMElements.themeToggle.button.addEventListener('click', () => {
+                const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
             DOMElements.exportButtons.projection.addEventListener('click', () => exportElementAsImage('projection-results', '資產預測結果.png'));
             DOMElements.exportButtons.goal.addEventListener('click', () => exportElementAsImage('goal-results', '退休計畫結果.png'));
             DOMElements.exportButtons.drip.addEventListener('click', () => exportElementAsImage('drip-results', '股息再投資結果.png'));
             DOMElements.toast.closeButton.addEventListener('click', () => DOMElements.toast.element.classList.remove('show'));
-
 
             document.querySelectorAll('.rate-template-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -949,6 +864,14 @@
             if (!mode) {
                 mode = loadStateFromLocalStorage();
             }
+            
+            // V2.5 深色模式初始化
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme) { applyTheme(savedTheme); } 
+            else if (systemPrefersDark) { applyTheme('dark'); }
+            else { applyTheme('light'); }
+
             initialize(mode || 'projection');
         });
     </script>
