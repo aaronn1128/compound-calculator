@@ -4,20 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- SEO & Social Title (已更新) -->
-    <title>複利計算機 & 財務規劃工具 | 退休金、儲蓄、通膨、目標規劃</title>
-    <meta property="og:title" content="複利計算機 & 財務規劃工具 | 退休金、儲蓄、通膨、目標規劃">
-    
-    <!-- SEO & Social Description (已更新) -->
-    <meta name="description" content="最強大的線上複利計算機！支援通膨、投入成長、目標反推。">
-    <meta property="og:description" content="最強大的線上複利計算機！支援通膨、投入成長、目標反推。">
-
-    <!-- Other Social Meta Tags -->
+    <title>全方位財務規劃計算機 | 複利、退休金、股息再投資(DRIP)</title>
+    <meta property="og:title" content="全方位財務規劃計算機 | 複利、退休金、股息再投資(DRIP)">
+    <meta name="description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬。">
+    <meta property="og:description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬。">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://aaronn1128.github.io/compound-calculator/">
-    <meta property="og:image" content="https://i.imgur.com/xJ2s7z4.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,19 +17,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 
-    <!-- Google AdSense Main Script START -->
-    <!-- TODO: 請將 'ca-pub-XXXXXXXXXXXXXXXX' 替換成您自己的 AdSense 發布商 ID -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-     crossorigin="anonymous"></script>
-    <!-- Google AdSense Main Script END -->
-
     <style>
         body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
         .form-input { transition: all 0.3s ease; }
         .result-value { font-weight: 700; font-size: 1.75rem; line-height: 2.25rem; transition: color 0.4s ease, transform 0.4s ease; }
         .value-update { animation: pulse-light 0.7s ease-out; }
         @keyframes pulse-light { 0% { color: #4f46e5; transform: scale(1); } 50% { color: #818cf8; transform: scale(1.05); } 100% { color: #4f46e5; transform: scale(1); } }
-        input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; }
+        input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; margin-top: 0.5rem;}
         input[type="range"]:hover { opacity: 1; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #4f46e5; cursor: pointer; border-radius: 50%; }
         ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -53,14 +38,15 @@
         <div class="w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 grid grid-cols-1 lg:grid-cols-5 gap-8">
             <!-- Input Section (Left) -->
             <div class="lg:col-span-2 flex flex-col">
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">財務規劃計算機</h1>
-                <p class="mt-2 text-slate-500">從資產預測到目標規劃，全方位掌握未來。</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">全方位財務規劃計算機</h1>
+                <p class="mt-2 text-slate-500">從資產預測到股息再投資，全方位掌握未來。</p>
 
                 <!-- Tabs -->
                 <div class="mt-6 border-b border-gray-200">
                     <nav class="-mb-px flex space-x-4" aria-label="Tabs">
                         <button id="tab-projection" class="tab-button active whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm">資產預測</button>
-                        <button id="tab-goal" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">目標規劃</button>
+                        <button id="tab-goal" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">退休計劃</button>
+                        <button id="tab-drip" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">股息再投資</button>
                     </nav>
                 </div>
 
@@ -82,7 +68,7 @@
                 <div id="goal-inputs" class="hidden">
                      <div class="mt-6 space-y-5">
                          <div>
-                            <label for="financialGoal" class="text-sm font-medium text-slate-700">財務目標總額 (元)</label>
+                            <label for="financialGoal" class="text-sm font-medium text-slate-700">退休目標總額 (元)</label>
                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="financialGoal" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="20000000"></div>
                         </div>
                         <div>
@@ -91,42 +77,81 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- DRIP Mode Inputs -->
+                <div id="drip-inputs" class="hidden">
+                    <div class="mt-6 space-y-5">
+                        <div>
+                            <label for="dripInitialInvestment" class="text-sm font-medium text-slate-700">初始投資 (元)</label>
+                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="dripInitialInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                        </div>
+                        <div>
+                            <label for="dripSharePrice" class="text-sm font-medium text-slate-700">目前股價 (元)</label>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="dripSharePrice" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="50"></div>
+                        </div>
+                        <div>
+                            <label for="dripDividendPerShare" class="text-sm font-medium text-slate-700">每次每股股息 (元)</label>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="dripDividendPerShare" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="0.5"></div>
+                        </div>
+                        <div>
+                            <label for="dripDividendFrequency" class="text-sm font-medium text-slate-700">股息發放頻率</label>
+                            <select id="dripDividendFrequency" class="form-input w-full px-4 py-2 border border-slate-300 rounded-lg mt-1">
+                                <option value="12">每月</option>
+                                <option value="4" selected>每季</option>
+                                <option value="2">每半年</option>
+                                <option value="1">每年</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="dripDividendGrowth" class="text-sm font-medium text-slate-700">年均股息成長率 (%)</label>
+                            <div class="mt-1 relative flex items-center"><input type="number" id="dripDividendGrowth" min="0" max="30" step="0.5" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                            <input type="range" id="dripDividendGrowthSlider" min="0" max="30" step="0.5" value="5">
+                        </div>
+                        <div>
+                            <label for="dripSharePriceGrowth" class="text-sm font-medium text-slate-700">年均股價成長率 (%)</label>
+                            <div class="mt-1 relative flex items-center"><input type="number" id="dripSharePriceGrowth" min="0" max="30" step="0.5" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                            <input type="range" id="dripSharePriceGrowthSlider" min="0" max="30" step="0.5" value="5">
+                        </div>
+                        <div>
+                            <label for="dripExtraInvestment" class="text-sm font-medium text-slate-700">每月額外投資 (元)</label>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="dripExtraInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="1000"></div>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Common Inputs -->
                 <div class="mt-5 space-y-5">
-                    <div>
-                        <label for="annualRate" class="text-sm font-medium text-slate-700">預估年化報酬率 (%)</label>
-                        <div class="mt-1 relative flex items-center"><input type="number" id="annualRate" min="0" max="50" step="0.5" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="7"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
-                        <input type="range" id="annualRateSlider" min="0" max="50" step="0.5" value="7" class="mt-2">
-                    </div>
-                    <div>
+                    <div id="common-years-input">
                         <label for="years" class="text-sm font-medium text-slate-700">投資年限 (年)</label>
                         <div class="mt-1 relative flex items-center"><input type="number" id="years" min="1" max="100" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="20"><span class="absolute right-0 pr-3 text-slate-400">年</span></div>
-                        <input type="range" id="yearsSlider" min="1" max="100" step="1" value="20" class="mt-2">
+                        <input type="range" id="yearsSlider" min="1" max="100" step="1" value="20">
+                    </div>
+                    <div id="common-rate-input">
+                         <label for="annualRate" class="text-sm font-medium text-slate-700">預估年化報酬率 (%)</label>
+                        <div class="mt-1 relative flex items-center"><input type="number" id="annualRate" min="0" max="50" step="0.5" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="7"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                        <input type="range" id="annualRateSlider" min="0" max="50" step="0.5" value="7">
                     </div>
                     <div id="inflation-input-container">
                         <label for="inflationRate" class="text-sm font-medium text-slate-700">預估年通膨率 (%)</label>
                         <div class="mt-1 relative flex items-center"><input type="number" id="inflationRate" min="0" max="10" step="0.1" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="2"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
-                        <input type="range" id="inflationRateSlider" min="0" max="10" step="0.1" value="2" class="mt-2">
+                        <input type="range" id="inflationRateSlider" min="0" max="10" step="0.1" value="2">
                     </div>
                 </div>
 
-                <!-- Ad Slot 1: Left Column Bottom START -->
+                <!-- Ad Slot 1 -->
                 <div class="mt-6">
                     <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
-                    <!-- TODO: 請將此處的程式碼替換成您從 AdSense 獲取的廣告單元程式碼 -->
                     <div style="min-height: 250px; background: #f1f5f9; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
-                         廣告版位 1
+                        廣告版位 1
                     </div>
                 </div>
-                <!-- Ad Slot 1 END -->
             </div>
 
             <!-- Result and Chart Section (Right) -->
             <div class="lg:col-span-3 bg-slate-50 rounded-xl p-6 flex flex-col">
                 <!-- Projection Results -->
                 <div id="projection-results" class="flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-slate-800">資產預測結果</h2>
+                     <h2 class="text-xl font-bold text-slate-800">資產預測結果</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="p-4 bg-white rounded-lg shadow-sm">
                             <p class="text-sm text-slate-500">最終總額 (名目價值)</p>
@@ -137,7 +162,7 @@
                             <p id="realFutureValue" class="result-value text-teal-600">$0</p>
                         </div>
                     </div>
-                    <div class="mt-4 flex-grow min-h-[250px]"><canvas id="growthChart"></canvas></div>
+                    <div class="mt-4 flex-grow min-h-[250px]"><canvas id="projectionGrowthChart"></canvas></div>
                     <div class="mt-6">
                         <h3 class="text-lg font-bold text-slate-800">年度明細</h3>
                         <div class="table-container mt-2 border border-slate-200 rounded-lg bg-white">
@@ -147,19 +172,10 @@
                             </table>
                         </div>
                     </div>
-                     <!-- Ad Slot 2: Right Column Bottom START -->
-                    <div class="mt-6">
-                         <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
-                         <!-- TODO: 請將此處的程式碼替換成您從 AdSense 獲取的廣告單元程式碼 -->
-                        <div style="min-height: 100px; background: #ffffff; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8; border: 1px solid #e2e8f0;">
-                            廣告版位 2
-                        </div>
-                    </div>
-                    <!-- Ad Slot 2 END -->
                 </div>
                 <!-- Goal Results -->
                 <div id="goal-results" class="hidden">
-                    <h2 class="text-xl font-bold text-slate-800">目標規劃結果</h2>
+                    <h2 class="text-xl font-bold text-slate-800">退休計劃結果</h2>
                     <div class="mt-4 p-6 bg-white rounded-lg shadow-sm text-center">
                         <p class="text-sm text-slate-500">為達成目標，您每月需投入</p>
                         <p id="requiredMonthly" class="result-value text-indigo-600">$0</p>
@@ -169,21 +185,85 @@
                         <p id="goal-summary" class="text-slate-600"></p>
                     </div>
                 </div>
+                <!-- DRIP Results -->
+                <div id="drip-results" class="hidden flex flex-col flex-grow">
+                    <h2 class="text-xl font-bold text-slate-800">股息再投資結果</h2>
+                     <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 bg-white rounded-lg shadow-sm">
+                            <p class="text-sm text-slate-500">最終總資產</p>
+                            <p id="dripEndBalance" class="result-value text-indigo-600">$0</p>
+                        </div>
+                        <div class="p-4 bg-white rounded-lg shadow-sm">
+                            <p class="text-sm text-slate-500">總投入本金</p>
+                            <p id="dripTotalInvested" class="result-value text-slate-800">$0</p>
+                        </div>
+                         <div class="p-4 bg-white rounded-lg shadow-sm">
+                            <p class="text-sm text-slate-500">總獲得股息</p>
+                            <p id="dripTotalDividends" class="result-value text-teal-600">$0</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex-grow min-h-[250px]"><canvas id="dripGrowthChart"></canvas></div>
+                    <div class="mt-6">
+                        <h3 class="text-lg font-bold text-slate-800">年度明細 (DRIP)</h3>
+                        <div class="table-container mt-2 border border-slate-200 rounded-lg bg-white">
+                            <table class="w-full text-sm text-left text-slate-600">
+                                <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0"><tr>
+                                    <th scope="col" class="px-4 py-2">年</th>
+                                    <th scope="col" class="px-4 py-2 text-right">年初資產</th>
+                                    <th scope="col" class="px-4 py-2 text-right">年度股息</th>
+                                    <th scope="col" class="px-4 py-2 text-right">年底總額</th>
+                                </tr></thead>
+                                <tbody id="dripDetailsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                 <!-- Ad Slot 2 -->
+                <div class="mt-6">
+                    <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
+                    <div style="min-height: 100px; background: #ffffff; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8; border: 1px solid #e2e8f0;">
+                         廣告版位 2
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // DOM Elements
+        // --- 全域變數與 DOM 元素 ---
+        let projectionChart, dripChart;
+        let currentMode = 'projection';
+        const formatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 });
+
+        // 統一定義顏色
+        const chartColors = {
+            primary: 'rgb(79, 70, 229)',      // Indigo
+            primaryTransparent: 'rgba(79, 70, 229, 0.2)',
+            secondary: 'rgb(13, 148, 136)',    // Teal
+            secondaryTransparent: 'rgba(13, 148, 136, 0.2)',
+            invested: 'rgba(100, 116, 139, 0.6)' // Slate
+        };
+
         const DOMElements = {
-            tabs: { projection: document.getElementById('tab-projection'), goal: document.getElementById('tab-goal') },
-            inputSections: { projection: document.getElementById('projection-inputs'), goal: document.getElementById('goal-inputs') },
-            resultSections: { projection: document.getElementById('projection-results'), goal: document.getElementById('goal-results') },
-            inputs: {
+            tabs: { 
+                projection: document.getElementById('tab-projection'), 
+                goal: document.getElementById('tab-goal'),
+                drip: document.getElementById('tab-drip') 
+            },
+            inputSections: { 
+                projection: document.getElementById('projection-inputs'), 
+                goal: document.getElementById('goal-inputs'),
+                drip: document.getElementById('drip-inputs')
+            },
+            resultSections: { 
+                projection: document.getElementById('projection-results'), 
+                goal: document.getElementById('goal-results'),
+                drip: document.getElementById('drip-results')
+            },
+            // 複利 & 目標規劃 Inputs
+            projectionInputs: {
                 initialPrincipal: document.getElementById('initialPrincipal'),
                 monthlyContribution: document.getElementById('monthlyContribution'),
-                financialGoal: document.getElementById('financialGoal'),
-                initialPrincipalGoal: document.getElementById('initialPrincipalGoal'),
                 annualRate: document.getElementById('annualRate'),
                 years: document.getElementById('years'),
                 inflationRate: document.getElementById('inflationRate'),
@@ -191,43 +271,82 @@
                 yearsSlider: document.getElementById('yearsSlider'),
                 inflationRateSlider: document.getElementById('inflationRateSlider'),
             },
-            outputs: {
+            goalInputs: {
+                financialGoal: document.getElementById('financialGoal'),
+                initialPrincipalGoal: document.getElementById('initialPrincipalGoal'),
+            },
+            // 複利 & 目標規劃 Outputs
+            projectionOutputs: {
                 futureValue: document.getElementById('futureValue'),
                 realFutureValue: document.getElementById('realFutureValue'),
                 detailsTableBody: document.getElementById('detailsTableBody'),
+            },
+            goalOutputs: {
                 requiredMonthly: document.getElementById('requiredMonthly'),
                 goalSummary: document.getElementById('goal-summary'),
             },
-            charts: { growth: document.getElementById('growthChart').getContext('2d')},
-            inflationInputContainer: document.getElementById('inflation-input-container'),
+            // DRIP 計算機 Inputs & Outputs
+            dripInputs: {
+                initialInvestment: document.getElementById('dripInitialInvestment'),
+                sharePrice: document.getElementById('dripSharePrice'),
+                dividendPerShare: document.getElementById('dripDividendPerShare'),
+                dividendFrequency: document.getElementById('dripDividendFrequency'),
+                dividendGrowth: document.getElementById('dripDividendGrowth'),
+                sharePriceGrowth: document.getElementById('dripSharePriceGrowth'),
+                extraInvestment: document.getElementById('dripExtraInvestment'),
+                dividendGrowthSlider: document.getElementById('dripDividendGrowthSlider'),
+                sharePriceGrowthSlider: document.getElementById('dripSharePriceGrowthSlider'),
+            },
+            dripOutputs: {
+                endBalance: document.getElementById('dripEndBalance'),
+                totalInvested: document.getElementById('dripTotalInvested'),
+                totalDividends: document.getElementById('dripTotalDividends'),
+                detailsTableBody: document.getElementById('dripDetailsTableBody'),
+            },
+            // 圖表 Canvas
+            charts: {
+                projection: document.getElementById('projectionGrowthChart').getContext('2d'),
+                drip: document.getElementById('dripGrowthChart').getContext('2d')
+            },
+            // 共用輸入區塊的容器
+            commonInputs: {
+                years: document.getElementById('common-years-input'),
+                rate: document.getElementById('common-rate-input'),
+                inflation: document.getElementById('inflation-input-container'),
+            }
         };
 
-        let growthChart;
-        let currentMode = 'projection';
-        const formatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 });
-
-        // --- Core Logic ---
+        // --- 主計算路由 ---
         function calculateAndRender() {
             if (currentMode === 'projection') {
                 calculateProjection();
-            } else {
+            } else if (currentMode === 'goal') {
                 calculateGoal();
+            } else if (currentMode === 'drip') {
+                runDripCalculation();
             }
         }
         
-        function getCommonInputs() {
-            return {
-                r: (parseFloat(DOMElements.inputs.annualRate.value) || 0) / 100,
-                t: parseInt(DOMElements.inputs.years.value) || 0,
-                inflation: (parseFloat(DOMElements.inputs.inflationRate.value) || 0) / 100,
-            };
+        // --- 頁籤切換邏輯 ---
+        function handleTabClick(mode) {
+            currentMode = mode;
+            Object.keys(DOMElements.tabs).forEach(key => DOMElements.tabs[key].classList.toggle('active', key === mode));
+            Object.keys(DOMElements.inputSections).forEach(key => DOMElements.inputSections[key].classList.toggle('hidden', key !== mode));
+            Object.keys(DOMElements.resultSections).forEach(key => DOMElements.resultSections[key].classList.toggle('hidden', key !== mode));
+            
+            DOMElements.commonInputs.inflation.classList.toggle('hidden', mode === 'goal' || mode === 'drip');
+            DOMElements.commonInputs.rate.classList.toggle('hidden', mode === 'drip');
+
+            calculateAndRender();
         }
-        
-        // --- Projection Mode Logic ---
+
+        // --- 複利計算 (Projection Mode) ---
         function calculateProjection() {
-            const P = parseFloat(DOMElements.inputs.initialPrincipal.value) || 0;
-            const PMT = parseFloat(DOMElements.inputs.monthlyContribution.value) || 0;
-            const { r, t, inflation } = getCommonInputs();
+            const P = parseFloat(DOMElements.projectionInputs.initialPrincipal.value) || 0;
+            const PMT = parseFloat(DOMElements.projectionInputs.monthlyContribution.value) || 0;
+            const r = (parseFloat(DOMElements.projectionInputs.annualRate.value) || 0) / 100;
+            const t = parseInt(DOMElements.projectionInputs.years.value) || 0;
+            const inflation = (parseFloat(DOMElements.projectionInputs.inflationRate.value) || 0) / 100;
             const n = 12;
             const monthlyRate = r / n;
 
@@ -257,14 +376,15 @@
             const finalRealValue = t > 0 ? finalFutureValue / Math.pow(1 + inflation, t) : P;
 
             updateProjectionUI(finalFutureValue, finalRealValue, yearlyDetails);
-            createOrUpdateChart(labels, futureValueData, realFutureValueData);
+            createOrUpdateProjectionChart(labels, futureValueData, realFutureValueData);
         }
-        
-        // --- Goal Mode Logic ---
+
+        // --- 目標規劃 (Goal Mode) ---
         function calculateGoal() {
-            const FV = parseFloat(DOMElements.inputs.financialGoal.value) || 0;
-            const P = parseFloat(DOMElements.inputs.initialPrincipalGoal.value) || 0;
-            const { r, t } = getCommonInputs();
+            const FV = parseFloat(DOMElements.goalInputs.financialGoal.value) || 0;
+            const P = parseFloat(DOMElements.goalInputs.initialPrincipalGoal.value) || 0;
+            const r = (parseFloat(DOMElements.projectionInputs.annualRate.value) || 0) / 100;
+            const t = parseInt(DOMElements.projectionInputs.years.value) || 0;
             const n = 12;
             const monthlyRate = r / n;
             const totalPeriods = t * n;
@@ -272,7 +392,7 @@
             let requiredPMT = 0;
             if (totalPeriods > 0) {
                 if (monthlyRate > 0) {
-                     requiredPMT = (FV - P * Math.pow(1 + monthlyRate, totalPeriods)) / ((Math.pow(1 + monthlyRate, totalPeriods) - 1) / monthlyRate);
+                    requiredPMT = (FV - P * Math.pow(1 + monthlyRate, totalPeriods)) / ((Math.pow(1 + monthlyRate, totalPeriods) - 1) / monthlyRate);
                 } else {
                     requiredPMT = (FV - P) / totalPeriods;
                 }
@@ -280,75 +400,193 @@
             updateGoalUI(requiredPMT, FV, t);
         }
 
-        // --- UI Update Functions ---
+        // --- 股息再投資 (DRIP Mode) ---
+        function runDripCalculation() {
+            const inputs = getDripInputs();
+            const results = calculateDrip(inputs);
+            displayDripResults(results, inputs);
+        }
+
+        function getDripInputs() {
+            return {
+                initialInvestment: parseFloat(DOMElements.dripInputs.initialInvestment.value) || 0,
+                sharePrice: parseFloat(DOMElements.dripInputs.sharePrice.value) || 1,
+                dividendPerShare: parseFloat(DOMElements.dripInputs.dividendPerShare.value) || 0,
+                dividendFrequency: parseInt(DOMElements.dripInputs.dividendFrequency.value),
+                dividendGrowth: (parseFloat(DOMElements.dripInputs.dividendGrowth.value) || 0) / 100,
+                sharePriceGrowth: (parseFloat(DOMElements.dripInputs.sharePriceGrowth.value) || 0) / 100,
+                extraInvestment: parseFloat(DOMElements.dripInputs.extraInvestment.value) || 0,
+                investmentYears: parseInt(DOMElements.projectionInputs.years.value) || 0
+            };
+        }
+
+        function calculateDrip(inputs) {
+            let currentSharePrice = inputs.sharePrice;
+            let currentDividendPerShare = inputs.dividendPerShare;
+            let totalShares = inputs.initialInvestment > 0 && currentSharePrice > 0 ? inputs.initialInvestment / currentSharePrice : 0;
+            let totalDividendsReceived = 0;
+            let totalInvestedCapital = inputs.initialInvestment;
+            const dividendMonthInterval = 12 / inputs.dividendFrequency;
+            const yearlyResults = [];
+            
+            for (let year = 1; year <= inputs.investmentYears; year++) {
+                const startBalance = totalShares * currentSharePrice;
+                let yearlyDividends = 0;
+                for (let month = 1; month <= 12; month++) {
+                    if (inputs.extraInvestment > 0) {
+                        totalShares += inputs.extraInvestment / currentSharePrice;
+                        totalInvestedCapital += inputs.extraInvestment;
+                    }
+                    if (month % dividendMonthInterval === 0 && currentDividendPerShare > 0) {
+                        const dividendPayment = totalShares * currentDividendPerShare;
+                        totalShares += dividendPayment / currentSharePrice;
+                        totalDividendsReceived += dividendPayment;
+                        yearlyDividends += dividendPayment;
+                    }
+                }
+                currentSharePrice *= (1 + inputs.sharePriceGrowth);
+                currentDividendPerShare *= (1 + inputs.dividendGrowth);
+                
+                yearlyResults.push({
+                    year: year,
+                    startBalance: startBalance,
+                    dividends: yearlyDividends,
+                    endBalance: totalShares * currentSharePrice
+                });
+            }
+            return { yearlyResults, totalInvested: totalInvestedCapital, totalDividends: totalDividendsReceived };
+        }
+
+        // --- UI 更新函式 ---
         function updateProjectionUI(fv, r_fv, details) {
-            DOMElements.outputs.futureValue.textContent = formatter.format(fv);
-            DOMElements.outputs.realFutureValue.textContent = formatter.format(r_fv);
-            animateValue(DOMElements.outputs.futureValue);
-            animateValue(DOMElements.outputs.realFutureValue);
+            DOMElements.projectionOutputs.futureValue.textContent = formatter.format(fv);
+            DOMElements.projectionOutputs.realFutureValue.textContent = formatter.format(r_fv);
+            animateValue(DOMElements.projectionOutputs.futureValue);
+            animateValue(DOMElements.projectionOutputs.realFutureValue);
             
             let tableHTML = '';
             details.forEach(item => {
                 tableHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${formatter.format(item.contribution)}</td><td class="px-4 py-2 text-right">${formatter.format(item.interest)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${formatter.format(item.endValue)}</td></tr>`;
             });
-            DOMElements.outputs.detailsTableBody.innerHTML = tableHTML;
-        }
-        
-        function updateGoalUI(pmt, fv, t) {
-            DOMElements.outputs.requiredMonthly.textContent = formatter.format(Math.max(0, pmt));
-            animateValue(DOMElements.outputs.requiredMonthly);
-            DOMElements.outputs.goalSummary.textContent = `在 ${t} 年後，達成 ${formatter.format(fv)} 的目標。`;
+            DOMElements.projectionOutputs.detailsTableBody.innerHTML = tableHTML;
         }
 
-        function createOrUpdateChart(labels, futureValueData, realFutureValueData) {
-            if (growthChart) growthChart.destroy();
-            growthChart = new Chart(DOMElements.charts.growth, {
+        function updateGoalUI(pmt, fv, t) {
+            DOMElements.goalOutputs.requiredMonthly.textContent = formatter.format(Math.max(0, pmt));
+            animateValue(DOMElements.goalOutputs.requiredMonthly);
+            DOMElements.goalOutputs.goalSummary.textContent = `在 ${t} 年後，達成 ${formatter.format(fv)} 的目標。`;
+        }
+
+        function displayDripResults(results, inputs) {
+            const finalYearData = results.yearlyResults[results.yearlyResults.length - 1] || { endBalance: inputs.initialInvestment };
+            
+            DOMElements.dripOutputs.endBalance.textContent = formatter.format(finalYearData.endBalance);
+            DOMElements.dripOutputs.totalInvested.textContent = formatter.format(results.totalInvested);
+            DOMElements.dripOutputs.totalDividends.textContent = formatter.format(results.totalDividends);
+            animateValue(DOMElements.dripOutputs.endBalance);
+            animateValue(DOMElements.dripOutputs.totalInvested);
+            animateValue(DOMElements.dripOutputs.totalDividends);
+
+            createOrUpdateDripChart(results.yearlyResults);
+            updateDripTable(results.yearlyResults);
+        }
+
+        // --- 圖表函式 ---
+        function createOrUpdateProjectionChart(labels, fvData, realFvData) {
+            if (projectionChart) projectionChart.destroy();
+            projectionChart = new Chart(DOMElements.charts.projection, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: '實質購買力', data: realFutureValueData, backgroundColor: 'rgba(13, 148, 136, 0.2)', borderColor: 'rgb(13, 148, 136)', fill: true, tension: 0.2 },
-                        { label: '累積總額 (名目)', data: futureValueData, backgroundColor: 'rgba(79, 70, 229, 0.2)', borderColor: 'rgb(79, 70, 229)', fill: true, tension: 0.2 },
+                        { label: '實質購買力', data: realFvData, backgroundColor: chartColors.secondaryTransparent, borderColor: chartColors.secondary, fill: true, tension: 0.2 },
+                        { label: '累積總額 (名目)', data: fvData, backgroundColor: chartColors.primaryTransparent, borderColor: chartColors.primary, fill: true, tension: 0.2 },
                     ]
                 },
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬` } } }, plugins: { legend: { position: 'bottom' } } }
             });
         }
-        
+
+        function createOrUpdateDripChart(yearlyResults) {
+            const labels = ['第0年', ...yearlyResults.map(r => `第 ${r.year} 年`)];
+            const startBalance = parseFloat(DOMElements.dripInputs.initialInvestment.value) || 0;
+            const dripData = [startBalance, ...yearlyResults.map(r => r.endBalance)];
+             const investedData = [startBalance, ...yearlyResults.map((r, i) => {
+                const years = i + 1;
+                return startBalance + ((parseFloat(DOMElements.dripInputs.extraInvestment.value) || 0) * 12 * years);
+            })];
+
+
+            if (dripChart) dripChart.destroy();
+            dripChart = new Chart(DOMElements.charts.drip, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '總投入本金',
+                        data: investedData,
+                        backgroundColor: chartColors.invested,
+                        order: 2
+                    },{
+                        label: '資產總額 (含股息)',
+                        data: dripData,
+                        borderColor: chartColors.primary,
+                        backgroundColor: chartColors.primaryTransparent,
+                        type: 'line',
+                        fill: false,
+                        tension: 0.2,
+                        order: 1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬` } } }, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function updateDripTable(yearlyResults) {
+            let tableHTML = '';
+            yearlyResults.forEach(item => {
+                tableHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${formatter.format(item.startBalance)}</td><td class="px-4 py-2 text-right">${formatter.format(item.dividends)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${formatter.format(item.endBalance)}</td></tr>`;
+            });
+            DOMElements.dripOutputs.detailsTableBody.innerHTML = tableHTML;
+        }
+
         function animateValue(element) {
             element.classList.add('value-update');
             element.addEventListener('animationend', () => element.classList.remove('value-update'), { once: true });
         }
-
-        // --- Event Handlers & Initialization ---
-        function handleTabClick(mode) {
-            currentMode = mode;
-            DOMElements.tabs.projection.classList.toggle('active', mode === 'projection');
-            DOMElements.tabs.goal.classList.toggle('active', mode === 'goal');
-            DOMElements.inputSections.projection.classList.toggle('hidden', mode !== 'projection');
-            DOMElements.inputSections.goal.classList.toggle('hidden', mode !== 'goal');
-            DOMElements.resultSections.projection.classList.toggle('hidden', mode !== 'projection');
-            DOMElements.resultSections.goal.classList.toggle('hidden', mode !== 'goal');
-            DOMElements.inflationInputContainer.classList.toggle('hidden', mode === 'goal');
-            calculateAndRender();
-        }
         
+        // --- 事件綁定與初始化 ---
         function handleInputChange(e) {
             const { id, value } = e.target;
-            const sliderId = id.includes('Slider') ? id : id + 'Slider';
-            const inputId = id.includes('Slider') ? id.replace('Slider', '') : id;
-            if (document.getElementById(sliderId)) document.getElementById(sliderId).value = value;
-            if (document.getElementById(inputId)) document.getElementById(inputId).value = value;
+            const isSlider = id.includes('Slider');
+            const baseId = isSlider ? id.replace('Slider', '') : id;
+            
+            const numEl = document.getElementById(baseId);
+            const sliderEl = document.getElementById(baseId + 'Slider');
 
-            if(id === 'initialPrincipal') DOMElements.inputs.initialPrincipalGoal.value = value;
-            if(id === 'initialPrincipalGoal') DOMElements.inputs.initialPrincipal.value = value;
+            if (numEl) numEl.value = value;
+            if (sliderEl) sliderEl.value = value;
+
+            if(baseId === 'initialPrincipal') DOMElements.goalInputs.initialPrincipalGoal.value = value;
+            if(baseId === 'initialPrincipalGoal') DOMElements.projectionInputs.initialPrincipal.value = value;
+
             calculateAndRender();
         }
         
         function initialize() {
-            Object.values(DOMElements.inputs).forEach(input => input.addEventListener('input', handleInputChange));
+            const allInputs = [
+                ...Object.values(DOMElements.projectionInputs),
+                ...Object.values(DOMElements.goalInputs),
+                ...Object.values(DOMElements.dripInputs)
+            ];
+            allInputs.forEach(input => {
+                if (input) input.addEventListener('input', handleInputChange);
+            });
+
             DOMElements.tabs.projection.addEventListener('click', () => handleTabClick('projection'));
             DOMElements.tabs.goal.addEventListener('click', () => handleTabClick('goal'));
+            DOMElements.tabs.drip.addEventListener('click', () => handleTabClick('drip'));
+            
             handleTabClick('projection');
         }
 
@@ -356,3 +594,4 @@
     </script>
 </body>
 </html>
+
