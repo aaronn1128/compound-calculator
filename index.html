@@ -19,33 +19,106 @@
 
     <style>
         body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
-        .form-input { transition: all 0.3s ease; }
+        
+        .form-input { 
+            transition: all 0.3s ease; 
+        }
+        .form-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+
+        .result-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .tab-button { 
+            transition: all 0.2s ease; 
+            border-color: transparent; 
+        }
+        .tab-button:active {
+            transform: scale(0.97);
+        }
+
         .result-value { 
             font-weight: 700; 
             transition: color 0.4s ease, transform 0.4s ease, font-size 0.3s ease; 
         }
         .value-update { animation: pulse-light 0.7s ease-out; }
         @keyframes pulse-light { 0% { color: #4f46e5; transform: scale(1); } 50% { color: #818cf8; transform: scale(1.05); } 100% { color: #4f46e5; transform: scale(1); } }
+        
         input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; margin-top: 0.5rem;}
         input[type="range"]:hover { opacity: 1; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #4f46e5; cursor: pointer; border-radius: 50%; }
+        
         ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .table-container { max-height: 250px; overflow-y: auto; }
-        .tab-button { transition: all 0.3s ease; border-color: transparent; }
         .tab-button.active { border-color: #4f46e5; color: #4f46e5; background-color: #eef2ff; }
+        
+        /* --- 工具提示 (Tooltip) 樣式 START --- */
+        .tooltip-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 10;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        /* --- 工具提示 (Tooltip) 樣式 END --- */
     </style>
 </head>
-<body class="bg-slate-100">
+<body class="bg-slate-100 p-4 sm:p-6 md:p-8">
 
-    <div class="container mx-auto p-4 max-w-7xl">
-        <div class="w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 grid grid-cols-1 lg:grid-cols-5 gap-8">
+    <header class="max-w-7xl mx-auto mb-6 flex items-center space-x-3">
+        <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-slate-800">財務規劃計算機</h1>
+    </header>
+
+    <main class="container mx-auto max-w-7xl">
+        <div class="w-full bg-white rounded-2xl shadow-2xl p-6 md:p-8 grid grid-cols-1 lg:grid-cols-5 gap-12">
             <!-- Input Section (Left) -->
             <div class="lg:col-span-2 flex flex-col">
-                <h1 class="text-2xl md:text-3xl font-bold text-slate-800">全方位財務規劃計算機</h1>
-                <p class="mt-2 text-slate-500">從資產預測到股息再投資，全方位掌握未來。</p>
-
+                
                 <!-- Tabs -->
-                <div class="mt-6 border-b border-gray-200">
+                <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-4" aria-label="Tabs">
                         <button id="tab-projection" class="tab-button active whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm">資產預測</button>
                         <button id="tab-goal" class="tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">退休計劃</button>
@@ -57,15 +130,27 @@
                 <div id="projection-inputs">
                     <div class="mt-6 space-y-5">
                         <div>
-                            <label for="initialPrincipal" class="text-sm font-medium text-slate-700">初始本金 (元)</label>
+                            <label for="initialPrincipal" class="text-sm font-medium text-slate-700 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                初始本金 (元)
+                            </label>
                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="initialPrincipal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
                         </div>
                         <div>
-                            <label for="monthlyContribution" class="text-sm font-medium text-slate-700">每月投入 (元)</label>
+                            <label for="monthlyContribution" class="text-sm font-medium text-slate-700 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
+                                每月投入 (元)
+                            </label>
                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="monthlyContribution" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="5000"></div>
                         </div>
                         <div>
-                            <label for="contributionGrowthRate" class="text-sm font-medium text-slate-700">每年投入成長率 (%)</label>
+                            <label for="contributionGrowthRate" class="text-sm font-medium text-slate-700 flex items-center">
+                                每年投入成長率 (%)
+                                <span class="tooltip-container ml-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="tooltip-text">用於模擬您的薪資成長。例如，若設定 3%，則第二年的每月投入金額將會比第一年增加 3%。</span>
+                                </span>
+                            </label>
                             <div class="mt-1 relative flex items-center">
                                 <input type="text" inputmode="decimal" id="contributionGrowthRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="0">
                                 <span class="absolute right-0 pr-3 text-slate-400">%</span>
@@ -79,11 +164,17 @@
                 <div id="goal-inputs" class="hidden">
                      <div class="mt-6 space-y-5">
                          <div>
-                            <label for="financialGoal" class="text-sm font-medium text-slate-700">退休目標總額 (元)</label>
+                            <label for="financialGoal" class="text-sm font-medium text-slate-700 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd" /></svg>
+                                退休目標總額 (元)
+                            </label>
                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="financialGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="20000000"></div>
                         </div>
                         <div>
-                            <label for="initialPrincipalGoal" class="text-sm font-medium text-slate-700">初始本金 (元)</label>
+                            <label for="initialPrincipalGoal" class="text-sm font-medium text-slate-700 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                初始本金 (元)
+                            </label>
                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="initialPrincipalGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
                         </div>
                     </div>
@@ -114,12 +205,24 @@
                             </select>
                         </div>
                         <div>
-                            <label for="dripDividendGrowth" class="text-sm font-medium text-slate-700">年均股息成長率 (%)</label>
+                            <label for="dripDividendGrowth" class="text-sm font-medium text-slate-700 flex items-center">
+                                年均股息成長率 (%)
+                                <span class="tooltip-container ml-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="tooltip-text">預期您投資的公司，其配發的股息每年平均會成長多少百分比。</span>
+                                </span>
+                            </label>
                             <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="dripDividendGrowth" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
                             <input type="range" id="dripDividendGrowthSlider" min="0" max="100" step="0.01" value="5">
                         </div>
                         <div>
-                            <label for="dripSharePriceGrowth" class="text-sm font-medium text-slate-700">年均股價成長率 (%)</label>
+                            <label for="dripSharePriceGrowth" class="text-sm font-medium text-slate-700 flex items-center">
+                                年均股價成長率 (%)
+                                <span class="tooltip-container ml-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="tooltip-text">預期您投資的股票，其本身的價格每年平均會成長多少百分比。</span>
+                                </span>
+                            </label>
                             <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="dripSharePriceGrowth" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
                             <input type="range" id="dripSharePriceGrowthSlider" min="0" max="100" step="0.01" value="5">
                         </div>
@@ -133,24 +236,39 @@
                 <!-- Common Inputs -->
                 <div class="mt-5 space-y-5">
                     <div id="common-years-input">
-                        <label for="years" class="text-sm font-medium text-slate-700">投資年限 (年)</label>
+                        <label for="years" class="text-sm font-medium text-slate-700 flex items-center">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            投資年限 (年)
+                        </label>
                         <div class="mt-1 relative flex items-center"><input type="number" id="years" min="1" max="100" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="20"><span class="absolute right-0 pr-3 text-slate-400">年</span></div>
                         <input type="range" id="yearsSlider" min="1" max="100" step="1" value="20">
                     </div>
                     <div id="common-rate-input">
-                         <label for="annualRate" class="text-sm font-medium text-slate-700">預估年化報酬率 (%)</label>
+                         <label for="annualRate" class="text-sm font-medium text-slate-700 flex items-center">
+                            預估年化報酬率 (%)
+                            <span class="tooltip-container ml-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span class="tooltip-text">您投資組合預期的平均每年回報率，這是一個長期平均值，已包含賺錢和賠錢的年份。</span>
+                            </span>
+                        </label>
                         <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="annualRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="7"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
                         <input type="range" id="annualRateSlider" min="0" max="100" step="0.01" value="7">
                     </div>
                     <div id="inflation-input-container">
-                        <label for="inflationRate" class="text-sm font-medium text-slate-700">預估年通膨率 (%)</label>
+                        <label for="inflationRate" class="text-sm font-medium text-slate-700 flex items-center">
+                            預估年通膨率 (%)
+                            <span class="tooltip-container ml-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span class="tooltip-text">預測未來物價平均每年上漲的幅度。這會影響您未來金錢的實際購買力。</span>
+                            </span>
+                        </label>
                         <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="inflationRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="2"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
                         <input type="range" id="inflationRateSlider" min="0" max="100" step="0.01" value="2">
                     </div>
                 </div>
 
                 <!-- Ad Slot 1 -->
-                <div class="mt-6">
+                <div class="mt-8">
                     <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
                     <div style="min-height: 250px; background: #f1f5f9; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
                         廣告版位 1
@@ -164,11 +282,11 @@
                 <div id="projection-results" class="flex flex-col flex-grow">
                      <h2 class="text-xl font-bold text-slate-800">資產預測結果</h2>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 bg-white rounded-lg shadow-sm">
+                        <div class="p-4 bg-white rounded-lg shadow-sm result-card">
                             <p class="text-sm text-slate-500">最終總額 (名目價值)</p>
                             <p id="futureValue" class="result-value text-indigo-600">$0</p>
                         </div>
-                        <div class="p-4 bg-white rounded-lg shadow-sm">
+                        <div class="p-4 bg-white rounded-lg shadow-sm result-card">
                             <p class="text-sm text-slate-500">相當於今天的購買力</p>
                             <p id="realFutureValue" class="result-value text-teal-600">$0</p>
                         </div>
@@ -187,7 +305,7 @@
                 <!-- Goal Results -->
                 <div id="goal-results" class="hidden">
                     <h2 class="text-xl font-bold text-slate-800">退休計劃結果</h2>
-                    <div class="mt-4 p-6 bg-white rounded-lg shadow-sm text-center">
+                    <div class="mt-4 p-6 bg-white rounded-lg shadow-sm text-center result-card">
                         <p class="text-sm text-slate-500">為達成目標，您每月需投入</p>
                         <p id="requiredMonthly" class="result-value text-indigo-600">$0</p>
                         <p class="text-xs text-slate-400 mt-1">此為名目價值，未考慮通膨</p>
@@ -195,23 +313,27 @@
                     <div class="mt-4 text-center p-4">
                         <p id="goal-summary" class="text-slate-600"></p>
                     </div>
-                    <div class="mt-4 p-4 bg-indigo-50 rounded-lg text-sm text-indigo-800">
+                    <div class="mt-4 p-4 bg-indigo-50 rounded-lg text-sm text-indigo-800 flex items-center justify-center">
                         <p id="fourPercentRuleText" class="text-center"></p>
+                        <span class="tooltip-container ml-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span class="tooltip-text">「4% 法則」是一個常見的退休提領法則，指退休第一年從退休金總額中提領 4%，之後每年依據通膨率調整提領金額，以維持退休生活品質。</span>
+                        </span>
                     </div>
                 </div>
                 <!-- DRIP Results -->
                 <div id="drip-results" class="hidden flex flex-col flex-grow">
                     <h2 class="text-xl font-bold text-slate-800">股息再投資結果</h2>
                      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="p-4 bg-white rounded-lg shadow-sm">
+                        <div class="p-4 bg-white rounded-lg shadow-sm result-card">
                             <p class="text-sm text-slate-500">最終總資產</p>
                             <p id="dripEndBalance" class="result-value text-indigo-600">$0</p>
                         </div>
-                        <div class="p-4 bg-white rounded-lg shadow-sm">
+                        <div class="p-4 bg-white rounded-lg shadow-sm result-card">
                             <p class="text-sm text-slate-500">總投入本金</p>
                             <p id="dripTotalInvested" class="result-value text-slate-800">$0</p>
                         </div>
-                         <div class="p-4 bg-white rounded-lg shadow-sm">
+                         <div class="p-4 bg-white rounded-lg shadow-sm result-card">
                             <p class="text-sm text-slate-500">總獲得股息</p>
                             <p id="dripTotalDividends" class="result-value text-teal-600">$0</p>
                         </div>
@@ -233,7 +355,7 @@
                     </div>
                 </div>
                  <!-- Ad Slot 2 -->
-                <div class="mt-6">
+                <div class="mt-8">
                     <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
                     <div style="min-height: 100px; background: #ffffff; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8; border: 1px solid #e2e8f0;">
                          廣告版位 2
@@ -241,7 +363,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
         // --- 全域變數與 DOM 元素 ---
@@ -624,9 +746,8 @@
             const numEl = document.getElementById(baseId);
             const sliderEl = document.getElementById(baseId + 'Slider');
             
-            // 當手動輸入時，只更新滑桿的值，但不要重新設定輸入框的值
-            if (isSlider) {
-                if (numEl) numEl.value = value;
+            if (numEl && (numEl.type === 'number' || isSlider)) {
+                numEl.value = value;
             }
             if (sliderEl) sliderEl.value = value;
 
@@ -644,12 +765,7 @@
             ];
             allInputs.forEach(input => {
                 if (input) {
-                    // 對於文字輸入框，我們使用 change 事件，在輸入完成後才觸發
-                    if (input.type === 'text' || input.type === 'number') {
-                         input.addEventListener('input', handleInputChange);
-                    } else { // 對於滑桿，我們依然使用 input 事件來達到即時反饋
-                        input.addEventListener('input', handleInputChange);
-                    }
+                    input.addEventListener('input', handleInputChange);
                 }
             });
 
