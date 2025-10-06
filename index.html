@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>全方位財務規劃計算機 | 複利、退休金、股息再投資(DRIP)</title>
-    <meta property="og:title" content="全方位財務規劃計算機 | 複利、退休金、股息再投資(DRIP)">
-    <meta name="description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬，新增資產分佈圖、預設模板與自動儲存功能。">
-    <meta property="og:description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬，新增資產分佈圖、預設模板與自動儲存功能。">
+    <title>全方位財務規劃計算機 v2.4 | 新增匯出功能</title>
+    <meta property="og:title" content="全方位財務規劃計算機 v2.4 | 新增匯出功能">
+    <meta name="description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬，新增結果匯出為圖片、智慧解讀與自動儲存功能。">
+    <meta property="og:description" content="最強大的線上財務計算機！支援複利、目標反推、股息再投資(DRIP)模擬，新增結果匯出為圖片、智慧解讀與自動儲存功能。">
     <meta property="og:type" content="website">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,8 +16,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <!-- V2.4 新增: 匯出圖片工具 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
+        :root { --toast-transform: translateY(100%); }
         body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
         
         .form-input { 
@@ -100,7 +103,6 @@
         }
         /* --- 工具提示 (Tooltip) 樣式 END --- */
 
-        /* --- V2.0 新增樣式 --- */
         .rate-template-btn {
             background-color: #f1f5f9;
             color: #475569;
@@ -115,6 +117,17 @@
             border-color: #cbd5e1;
             transform: translateY(-1px);
         }
+        
+        /* V2.4 新增: Toast (提示訊息) 樣式 */
+        #toast-notification {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) var(--toast-transform);
+            transition: transform 0.3s ease-in-out;
+            z-index: 50;
+        }
+        #toast-notification.show { --toast-transform: translateY(0); }
     </style>
 </head>
 <body class="bg-slate-100 p-4 sm:p-6 md:p-8">
@@ -128,7 +141,6 @@
             </div>
             <h1 class="text-2xl font-bold text-slate-800">財務規劃計算機</h1>
         </div>
-        <!-- V2.1 新增: 分享按鈕 -->
         <button id="share-button" class="flex items-center space-x-2 bg-white border border-slate-300 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
@@ -142,7 +154,6 @@
             <!-- Input Section (Left) -->
             <div class="lg:col-span-2 flex flex-col">
                 
-                <!-- Tabs -->
                 <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-4" aria-label="Tabs">
                         <button id="tab-projection" class="tab-button active whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm">資產預測</button>
@@ -187,22 +198,22 @@
 
                 <!-- Goal Mode Inputs -->
                 <div id="goal-inputs" class="hidden">
-                     <div class="mt-6 space-y-5">
-                         <div>
-                            <label for="financialGoal" class="text-sm font-medium text-slate-700 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd" /></svg>
-                                退休目標總額 (元)
-                            </label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="financialGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="20000000"></div>
+                       <div class="mt-6 space-y-5">
+                            <div>
+                                <label for="financialGoal" class="text-sm font-medium text-slate-700 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clip-rule="evenodd" /></svg>
+                                    退休目標總額 (元)
+                                </label>
+                                <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="financialGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="20000000"></div>
+                            </div>
+                            <div>
+                                <label for="initialPrincipalGoal" class="text-sm font-medium text-slate-700 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                    初始本金 (元)
+                                </label>
+                                <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="initialPrincipalGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                            </div>
                         </div>
-                        <div>
-                            <label for="initialPrincipalGoal" class="text-sm font-medium text-slate-700 flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                                初始本金 (元)
-                            </label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="initialPrincipalGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- DRIP Mode Inputs -->
@@ -210,7 +221,7 @@
                     <div class="mt-6 space-y-5">
                         <div>
                             <label for="dripInitialInvestment" class="text-sm font-medium text-slate-700">初始投資 (元)</label>
-                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripInitialInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                               <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripInitialInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
                         </div>
                         <div>
                             <label for="dripSharePrice" class="text-sm font-medium text-slate-700">目前股價 (元)</label>
@@ -278,7 +289,6 @@
                         </label>
                         <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="annualRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="7"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
                         <input type="range" id="annualRateSlider" min="0" max="100" step="0.01" value="7">
-                        <!-- V2.0 新增: 預設樣板按鈕 -->
                         <div class="mt-2 flex items-center space-x-2">
                             <span class="text-xs text-slate-500">快速設定:</span>
                             <button data-rate="4" class="rate-template-btn">保守型 (4%)</button>
@@ -300,9 +310,9 @@
                 </div>
 
                 <!-- Ad Slot 1 -->
-                <div class="mt-8">
+                <div class="mt-auto pt-8">
                     <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
-                    <div style="min-height: 250px; background: #f1f5f9; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8;">
+                    <div class="min-h-[250px] bg-slate-100 rounded-lg flex items-center justify-center text-slate-400">
                         廣告版位 1
                     </div>
                 </div>
@@ -312,8 +322,13 @@
             <div class="lg:col-span-3 bg-slate-50 rounded-xl p-6 flex flex-col">
                 <!-- Projection Results -->
                 <div id="projection-results" class="flex flex-col flex-grow">
-                     <h2 class="text-xl font-bold text-slate-800">資產預測結果</h2>
-                    <!-- V2.0 修改: 結果與甜甜圈圖並排 -->
+                     <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-slate-800">資產預測結果</h2>
+                        <!-- V2.4 新增: 匯出按鈕 -->
+                        <button id="export-projection-btn" class="text-slate-500 hover:bg-slate-200 rounded-lg p-2 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        </button>
+                     </div>
                     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                         <div class="space-y-4">
                             <div class="p-4 bg-white rounded-lg shadow-sm result-card">
@@ -325,11 +340,12 @@
                                 <p id="realFutureValue" class="result-value text-teal-600">$0</p>
                             </div>
                         </div>
-                        <!-- V2.0 新增: 資產組成甜甜圈圖 -->
                         <div class="relative min-h-[220px] p-4 bg-white rounded-lg shadow-sm flex items-center justify-center">
                             <canvas id="compositionChart"></canvas>
                         </div>
                     </div>
+                    <!-- V2.3 新增: 結果解讀 -->
+                    <div id="projection-interpretation" class="mt-6 p-4 bg-indigo-50 text-indigo-800 rounded-lg text-sm transition-opacity duration-300"></div>
                     <div class="mt-6 flex-grow min-h-[250px]"><canvas id="projectionGrowthChart"></canvas></div>
                     <div class="mt-6">
                         <h3 class="text-lg font-bold text-slate-800">年度明細</h3>
@@ -343,7 +359,12 @@
                 </div>
                 <!-- Goal Results -->
                 <div id="goal-results" class="hidden">
-                    <h2 class="text-xl font-bold text-slate-800">退休計劃結果</h2>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-slate-800">退休計劃結果</h2>
+                        <button id="export-goal-btn" class="text-slate-500 hover:bg-slate-200 rounded-lg p-2 transition-colors">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        </button>
+                    </div>
                     <div class="mt-4 p-6 bg-white rounded-lg shadow-sm text-center result-card">
                         <p class="text-sm text-slate-500">為達成目標，您每月需投入</p>
                         <p id="requiredMonthly" class="result-value text-indigo-600">$0</p>
@@ -362,20 +383,25 @@
                 </div>
                 <!-- DRIP Results -->
                 <div id="drip-results" class="hidden flex flex-col flex-grow">
-                    <h2 class="text-xl font-bold text-slate-800">股息再投資結果</h2>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-slate-800">股息再投資結果</h2>
+                        <button id="export-drip-btn" class="text-slate-500 hover:bg-slate-200 rounded-lg p-2 transition-colors">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        </button>
+                    </div>
                      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                         <div class="p-4 bg-white rounded-lg shadow-sm result-card">
-                            <p class="text-sm text-slate-500">最終總資產</p>
-                            <p id="dripEndBalance" class="result-value text-indigo-600">$0</p>
-                        </div>
-                        <div class="p-4 bg-white rounded-lg shadow-sm result-card">
-                            <p class="text-sm text-slate-500">總投入本金</p>
-                            <p id="dripTotalInvested" class="result-value text-slate-800">$0</p>
-                        </div>
-                         <div class="p-4 bg-white rounded-lg shadow-sm result-card">
-                            <p class="text-sm text-slate-500">總獲得股息</p>
-                            <p id="dripTotalDividends" class="result-value text-teal-600">$0</p>
-                        </div>
+                           <div class="p-4 bg-white rounded-lg shadow-sm result-card">
+                                <p class="text-sm text-slate-500">最終總資產</p>
+                                <p id="dripEndBalance" class="result-value text-indigo-600">$0</p>
+                            </div>
+                           <div class="p-4 bg-white rounded-lg shadow-sm result-card">
+                                <p class="text-sm text-slate-500">總投入本金</p>
+                                <p id="dripTotalInvested" class="result-value text-slate-800">$0</p>
+                            </div>
+                            <div class="p-4 bg-white rounded-lg shadow-sm result-card">
+                                <p class="text-sm text-slate-500">總獲得股息</p>
+                                <p id="dripTotalDividends" class="result-value text-teal-600">$0</p>
+                            </div>
                     </div>
                     <div class="mt-4 flex-grow min-h-[250px]"><canvas id="dripGrowthChart"></canvas></div>
                     <div class="mt-6">
@@ -393,20 +419,34 @@
                         </div>
                     </div>
                 </div>
-                 <!-- Ad Slot 2 -->
-                <div class="mt-8">
+                 <div class="mt-auto pt-8">
                     <div class="text-xs text-center text-slate-400 mb-2">廣告</div>
-                    <div style="min-height: 100px; background: #ffffff; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; color: #94a3b8; border: 1px solid #e2e8f0;">
+                    <div class="min-h-[100px] bg-white rounded-lg flex items-center justify-center text-slate-500 border border-slate-200">
                          廣告版位 2
                     </div>
                 </div>
             </div>
         </div>
     </main>
+    
+    <!-- V2.4 新增: Toast 元件 -->
+    <div id="toast-notification" class="w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-lg">
+        <div class="flex items-center">
+            <div id="toast-icon" class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+            </div>
+            <div id="toast-message" class="ml-3 text-sm font-normal">訊息</div>
+            <button type="button" id="toast-close-btn" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8">
+                <span class="sr-only">Close</span>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.697a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+    </div>
+
 
     <script>
         // --- 全域變數與 DOM 元素 ---
-        let projectionChart, dripChart, compositionChart; // V2.0 新增 compositionChart
+        let projectionChart, dripChart, compositionChart; 
         let currentMode = 'projection';
         const formatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
         const decimalFormatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -419,26 +459,13 @@
             secondary: 'rgb(13, 148, 136)',   // Teal
             secondaryTransparent: 'rgba(13, 148, 136, 0.2)',
             invested: 'rgba(100, 116, 139, 0.6)', // Slate
-            interest: 'rgba(219, 39, 119, 0.7)' // V2.0 新增: Rose for interest
+            interest: 'rgba(219, 39, 119, 0.7)' 
         };
 
         const DOMElements = {
-            tabs: { 
-                projection: document.getElementById('tab-projection'), 
-                goal: document.getElementById('tab-goal'),
-                drip: document.getElementById('tab-drip') 
-            },
-            inputSections: { 
-                projection: document.getElementById('projection-inputs'), 
-                goal: document.getElementById('goal-inputs'),
-                drip: document.getElementById('drip-inputs')
-            },
-            resultSections: { 
-                projection: document.getElementById('projection-results'), 
-                goal: document.getElementById('goal-results'),
-                drip: document.getElementById('drip-results')
-            },
-            // 複利 & 目標規劃 Inputs
+            tabs: { projection: document.getElementById('tab-projection'), goal: document.getElementById('tab-goal'), drip: document.getElementById('tab-drip') },
+            inputSections: { projection: document.getElementById('projection-inputs'), goal: document.getElementById('goal-inputs'), drip: document.getElementById('drip-inputs') },
+            resultSections: { projection: document.getElementById('projection-results'), goal: document.getElementById('goal-results'), drip: document.getElementById('drip-results') },
             projectionInputs: {
                 initialPrincipal: document.getElementById('initialPrincipal'),
                 monthlyContribution: document.getElementById('monthlyContribution'),
@@ -451,22 +478,14 @@
                 yearsSlider: document.getElementById('yearsSlider'),
                 inflationRateSlider: document.getElementById('inflationRateSlider'),
             },
-            goalInputs: {
-                financialGoal: document.getElementById('financialGoal'),
-                initialPrincipalGoal: document.getElementById('initialPrincipalGoal'),
-            },
-            // 複利 & 目標規劃 Outputs
+            goalInputs: { financialGoal: document.getElementById('financialGoal'), initialPrincipalGoal: document.getElementById('initialPrincipalGoal') },
             projectionOutputs: {
                 futureValue: document.getElementById('futureValue'),
                 realFutureValue: document.getElementById('realFutureValue'),
                 detailsTableBody: document.getElementById('detailsTableBody'),
+                interpretation: document.getElementById('projection-interpretation'), // V2.3
             },
-            goalOutputs: {
-                requiredMonthly: document.getElementById('requiredMonthly'),
-                goalSummary: document.getElementById('goal-summary'),
-                fourPercentRuleText: document.getElementById('fourPercentRuleText'),
-            },
-            // DRIP 計算機 Inputs & Outputs
+            goalOutputs: { requiredMonthly: document.getElementById('requiredMonthly'), goalSummary: document.getElementById('goal-summary'), fourPercentRuleText: document.getElementById('fourPercentRuleText') },
             dripInputs: {
                 initialInvestment: document.getElementById('dripInitialInvestment'),
                 sharePrice: document.getElementById('dripSharePrice'),
@@ -478,27 +497,38 @@
                 dividendGrowthSlider: document.getElementById('dripDividendGrowthSlider'),
                 sharePriceGrowthSlider: document.getElementById('dripSharePriceGrowthSlider'),
             },
-            dripOutputs: {
-                endBalance: document.getElementById('dripEndBalance'),
-                totalInvested: document.getElementById('dripTotalInvested'),
-                totalDividends: document.getElementById('dripTotalDividends'),
-                detailsTableBody: document.getElementById('dripDetailsTableBody'),
-            },
-            // 圖表 Canvas
+            dripOutputs: { endBalance: document.getElementById('dripEndBalance'), totalInvested: document.getElementById('dripTotalInvested'), totalDividends: document.getElementById('dripTotalDividends'), detailsTableBody: document.getElementById('dripDetailsTableBody') },
             charts: {
                 projection: document.getElementById('projectionGrowthChart').getContext('2d'),
                 drip: document.getElementById('dripGrowthChart').getContext('2d'),
-                composition: document.getElementById('compositionChart').getContext('2d') // V2.0 新增
+                composition: document.getElementById('compositionChart').getContext('2d')
             },
-            // 共用輸入區塊的容器
-            commonInputs: {
-                years: document.getElementById('common-years-input'),
-                rate: document.getElementById('common-rate-input'),
-                inflation: document.getElementById('inflation-input-container'),
+            commonInputs: { years: document.getElementById('common-years-input'), rate: document.getElementById('common-rate-input'), inflation: document.getElementById('inflation-input-container') },
+            shareButton: document.getElementById('share-button'),
+            // V2.4 新增
+            exportButtons: {
+                projection: document.getElementById('export-projection-btn'),
+                goal: document.getElementById('export-goal-btn'),
+                drip: document.getElementById('export-drip-btn'),
             },
-            // V2.1 新增
-            shareButton: document.getElementById('share-button')
+            toast: {
+                element: document.getElementById('toast-notification'),
+                icon: document.getElementById('toast-icon'),
+                message: document.getElementById('toast-message'),
+                closeButton: document.getElementById('toast-close-btn'),
+            }
         };
+        
+        // V2.4 新增: Toast (提示訊息) 邏輯
+        let toastTimeout;
+        function showToast(message) {
+            DOMElements.toast.message.textContent = message;
+            DOMElements.toast.element.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                DOMElements.toast.element.classList.remove('show');
+            }, 3000);
+        }
 
         // --- 主計算路由 ---
         function calculateAndRender() {
@@ -511,7 +541,6 @@
             }
         }
         
-        // --- 頁籤切換邏輯 ---
         function handleTabClick(mode) {
             currentMode = mode;
             Object.keys(DOMElements.tabs).forEach(key => DOMElements.tabs[key].classList.toggle('active', key === mode));
@@ -522,7 +551,7 @@
             DOMElements.commonInputs.rate.classList.toggle('hidden', mode === 'drip');
 
             calculateAndRender();
-            saveStateToLocalStorage(); // V2.1 新增: 切換 tab 時儲存狀態
+            saveStateToLocalStorage(); 
         }
 
         // --- 複利計算 (Projection Mode) ---
@@ -536,18 +565,12 @@
             const n = 12;
             const monthlyRate = r / n;
 
-            let yearlyDetails = [];
-            let lastYearEndValue = P;
-            const labels = ['第0年'];
-            const futureValueData = [P];
-            const realFutureValueData = [P];
+            let yearlyDetails = [], lastYearEndValue = P, totalPrincipalInvested = P;
+            const labels = ['第0年'], futureValueData = [P], realFutureValueData = [P];
             let currentPMT = PMT;
-            let totalPrincipalInvested = P;
 
             for (let year = 1; year <= t; year++) {
-                let yearStartValue = lastYearEndValue;
-                let yearEndValue = yearStartValue;
-                let yearContribution = 0;
+                let yearStartValue = lastYearEndValue, yearEndValue = yearStartValue, yearContribution = 0;
                 for (let month = 1; month <= n; month++) {
                     yearEndValue = yearEndValue * (1 + monthlyRate) + currentPMT;
                     yearContribution += currentPMT;
@@ -560,48 +583,36 @@
                 labels.push(`第${year}年`);
                 futureValueData.push(yearEndValue);
                 realFutureValueData.push(yearEndValue / Math.pow(1 + inflation, year));
-                
-                // 為下一年準備，增加每月投入
                 currentPMT *= (1 + contributionGrowth);
             }
             const finalFutureValue = t > 0 ? lastYearEndValue : P;
             const finalRealValue = t > 0 ? finalFutureValue / Math.pow(1 + inflation, t) : P;
             const totalInterestEarned = finalFutureValue - totalPrincipalInvested;
 
-            updateProjectionUI(finalFutureValue, finalRealValue, yearlyDetails);
+            updateProjectionUI(finalFutureValue, finalRealValue, yearlyDetails, totalPrincipalInvested, t);
             createOrUpdateProjectionChart(labels, futureValueData, realFutureValueData);
-            // V2.0 新增: 更新甜甜圈圖
             createOrUpdateCompositionChart(totalPrincipalInvested, totalInterestEarned);
         }
 
-        // --- 目標規劃 (Goal Mode) ---
         function calculateGoal() {
             const FV = parseFloat(DOMElements.goalInputs.financialGoal.value) || 0;
             const P = parseFloat(DOMElements.goalInputs.initialPrincipalGoal.value) || 0;
             const r = (parseFloat(DOMElements.projectionInputs.annualRate.value) || 0) / 100;
             const t = parseInt(DOMElements.projectionInputs.years.value) || 0;
-            const n = 12;
-            const monthlyRate = r / n;
-            const totalPeriods = t * n;
+            const n = 12, monthlyRate = r / n, totalPeriods = t * n;
             
             let requiredPMT = 0;
             if (totalPeriods > 0) {
-                if (monthlyRate > 0) {
-                    requiredPMT = (FV - P * Math.pow(1 + monthlyRate, totalPeriods)) / ((Math.pow(1 + monthlyRate, totalPeriods) - 1) / monthlyRate);
-                } else {
-                    requiredPMT = (FV - P) / totalPeriods;
-                }
+                requiredPMT = (monthlyRate > 0) ? (FV - P * Math.pow(1 + monthlyRate, totalPeriods)) / ((Math.pow(1 + monthlyRate, totalPeriods) - 1) / monthlyRate) : (FV - P) / totalPeriods;
             }
             updateGoalUI(requiredPMT, FV, t);
         }
 
-        // --- 股息再投資 (DRIP Mode) ---
         function runDripCalculation() {
             const inputs = getDripInputs();
             const results = calculateDrip(inputs);
             displayDripResults(results, inputs);
         }
-
         function getDripInputs() {
             return {
                 initialInvestment: parseFloat(DOMElements.dripInputs.initialInvestment.value) || 0,
@@ -614,7 +625,6 @@
                 investmentYears: parseInt(DOMElements.projectionInputs.years.value) || 0
             };
         }
-
         function calculateDrip(inputs) {
             let currentSharePrice = inputs.sharePrice;
             let currentDividendPerShare = inputs.dividendPerShare;
@@ -623,7 +633,6 @@
             let totalInvestedCapital = inputs.initialInvestment;
             const dividendMonthInterval = 12 / inputs.dividendFrequency;
             const yearlyResults = [];
-            
             for (let year = 1; year <= inputs.investmentYears; year++) {
                 const startBalance = totalShares * currentSharePrice;
                 let yearlyDividends = 0;
@@ -641,19 +650,13 @@
                 }
                 currentSharePrice *= (1 + inputs.sharePriceGrowth);
                 currentDividendPerShare *= (1 + inputs.dividendGrowth);
-                
-                yearlyResults.push({
-                    year: year,
-                    startBalance: startBalance,
-                    dividends: yearlyDividends,
-                    endBalance: totalShares * currentSharePrice
-                });
+                yearlyResults.push({ year: year, startBalance: startBalance, dividends: yearlyDividends, endBalance: totalShares * currentSharePrice });
             }
             return { yearlyResults, totalInvested: totalInvestedCapital, totalDividends: totalDividendsReceived };
         }
 
         // --- UI 更新函式 ---
-        function updateProjectionUI(fv, r_fv, details) {
+        function updateProjectionUI(fv, r_fv, details, totalPrincipal, years) {
             const fvText = formatter.format(fv);
             adjustFontSize(DOMElements.projectionOutputs.futureValue, fvText);
             DOMElements.projectionOutputs.futureValue.textContent = fvText;
@@ -665,13 +668,13 @@
             animateValue(DOMElements.projectionOutputs.futureValue);
             animateValue(DOMElements.projectionOutputs.realFutureValue);
             
-            let tableHTML = '';
-            details.forEach(item => {
-                tableHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${formatter.format(item.contribution)}</td><td class="px-4 py-2 text-right">${formatter.format(item.interest)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${formatter.format(item.endValue)}</td></tr>`;
-            });
-            DOMElements.projectionOutputs.detailsTableBody.innerHTML = tableHTML;
-        }
+            DOMElements.projectionOutputs.detailsTableBody.innerHTML = details.map(item => 
+                `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${formatter.format(item.contribution)}</td><td class="px-4 py-2 text-right">${formatter.format(item.interest)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${formatter.format(item.endValue)}</td></tr>`
+            ).join('');
 
+            // V2.3 新增: 更新結果解讀
+            DOMElements.projectionOutputs.interpretation.innerHTML = generateProjectionInterpretation(fv, totalPrincipal, years);
+        }
         function updateGoalUI(pmt, fv, t) {
             const pmtText = formatter.format(Math.max(0, pmt));
             adjustFontSize(DOMElements.goalOutputs.requiredMonthly, pmtText);
@@ -683,10 +686,8 @@
             const annualWithdrawal = fv * 0.04;
             DOMElements.goalOutputs.fourPercentRuleText.innerHTML = `根據 <b>4% 法則</b>，這筆 ${formatter.format(fv)} 的退休金，每年約可提領 <b>${formatter.format(annualWithdrawal)}</b> 作為生活費。`;
         }
-
         function displayDripResults(results, inputs) {
             const finalYearData = results.yearlyResults[results.yearlyResults.length - 1] || { endBalance: inputs.initialInvestment };
-            
             const endBalanceText = decimalFormatter.format(finalYearData.endBalance);
             adjustFontSize(DOMElements.dripOutputs.endBalance, endBalanceText);
             DOMElements.dripOutputs.endBalance.textContent = endBalanceText;
@@ -702,25 +703,27 @@
             animateValue(DOMElements.dripOutputs.endBalance);
             animateValue(DOMElements.dripOutputs.totalInvested);
             animateValue(DOMElements.dripOutputs.totalDividends);
-
             createOrUpdateDripChart(results.yearlyResults);
             updateDripTable(results.yearlyResults);
         }
-        
         function adjustFontSize(element, text) {
-            const baseSize = '1.75rem'; // text-3xl
-            const mediumSize = '1.5rem'; // text-2xl
-            const smallSize = '1.25rem'; // text-xl
-
-            if (text.length > 13) {
-                element.style.fontSize = smallSize;
-            } else if (text.length > 10) {
-                element.style.fontSize = mediumSize;
-            } else {
-                element.style.fontSize = baseSize;
-            }
+             const baseSize = '1.75rem', mediumSize = '1.5rem', smallSize = '1.25rem';
+             if (text.length > 13) { element.style.fontSize = smallSize; } 
+             else if (text.length > 10) { element.style.fontSize = mediumSize; } 
+             else { element.style.fontSize = baseSize; }
         }
 
+        // V2.3 新增: 結果解讀生成
+        function generateProjectionInterpretation(fv, totalPrincipal, years) {
+            if (fv === 0 && totalPrincipal === 0) return "請輸入您的財務數字，開始規劃未來。";
+            if (fv <= totalPrincipal) return "根據目前設定，您的資產成長有限。建議考慮提高每月投入或尋找更高報酬率的投資標的。";
+
+            const totalInterest = fv - totalPrincipal;
+            const interestPercentage = ((totalInterest / fv) * 100).toFixed(0);
+            let text = `在 ${years} 年後，您的總資產預計達到 <strong>${formatter.format(fv)}</strong>。`;
+            text += ` 其中，有 <strong>${formatter.format(totalInterest)}</strong> (約 ${interestPercentage}%) 是來自於利息收益，這充分展現了複利的強大威力！`;
+            return text;
+        }
 
         // --- 圖表函式 ---
         function createOrUpdateProjectionChart(labels, fvData, realFvData) {
@@ -737,48 +740,24 @@
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬` } } }, plugins: { legend: { position: 'bottom' } } }
             });
         }
-
-        // V2.0 新增: 建立或更新資產組成甜甜圈圖
         function createOrUpdateCompositionChart(principal, interest) {
             if (compositionChart) compositionChart.destroy();
-            
             const hasData = principal > 0 || interest > 0;
-
             compositionChart = new Chart(DOMElements.charts.composition, {
                 type: 'doughnut',
                 data: {
                     labels: ['總投入本金', '總獲取利息'],
                     datasets: [{
-                        data: hasData ? [principal, interest] : [1, 0], // 確保圖表在沒數據時也能顯示
+                        data: hasData ? [principal, interest] : [1, 0], 
                         backgroundColor: hasData ? [chartColors.invested, chartColors.primary] : ['#e2e8f0', '#e2e8f0'],
                         borderColor: '#f8fafc',
                         borderWidth: 2,
                         hoverOffset: 4
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } },
-                        tooltip: {
-                             callbacks: {
-                                label: function(context) {
-                                    if (!hasData) return "尚無資料";
-                                    let label = context.label || '';
-                                    if (label) label += ': ';
-                                    if (context.parsed !== null) {
-                                        label += formatter.format(context.parsed);
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }, tooltip: { callbacks: { label: (ctx) => hasData ? `${ctx.label || ''}: ${formatter.format(ctx.parsed)}` : "尚無資料" }}}}
             });
         }
-
         function createOrUpdateDripChart(yearlyResults) {
             const labels = ['第0年', ...yearlyResults.map(r => `第 ${r.year} 年`)];
             const startBalance = parseFloat(DOMElements.dripInputs.initialInvestment.value) || 0;
@@ -787,39 +766,24 @@
                 const years = i + 1;
                 return startBalance + ((parseFloat(DOMElements.dripInputs.extraInvestment.value) || 0) * 12 * years);
             })];
-
-
             if (dripChart) dripChart.destroy();
             dripChart = new Chart(DOMElements.charts.drip, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: '總投入本金',
-                        data: investedData,
-                        backgroundColor: chartColors.invested,
-                        order: 2
+                        label: '總投入本金', data: investedData, backgroundColor: chartColors.invested, order: 2
                     },{
-                        label: '資產總額 (含股息)',
-                        data: dripData,
-                        borderColor: chartColors.primary,
-                        backgroundColor: chartColors.primaryTransparent,
-                        type: 'line',
-                        fill: false,
-                        tension: 0.2,
-                        order: 1
+                        label: '資產總額 (含股息)', data: dripData, borderColor: chartColors.primary, backgroundColor: chartColors.primaryTransparent, type: 'line', fill: false, tension: 0.2, order: 1
                     }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { callback: value => (value >= 100000000) ? `${value / 100000000}億` : `${value / 10000}萬` } } }, plugins: { legend: { position: 'bottom' } } }
             });
         }
-
         function updateDripTable(yearlyResults) {
-            let tableHTML = '';
-            yearlyResults.forEach(item => {
-                tableHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.startBalance)}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.dividends)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${decimalFormatter.format(item.endBalance)}</td></tr>`;
-            });
-            DOMElements.dripOutputs.detailsTableBody.innerHTML = tableHTML;
+            DOMElements.dripOutputs.detailsTableBody.innerHTML = yearlyResults.map(item => 
+                `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.startBalance)}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.dividends)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${decimalFormatter.format(item.endBalance)}</td></tr>`
+            ).join('');
         }
 
         function animateValue(element) {
@@ -827,13 +791,9 @@
             element.addEventListener('animationend', () => element.classList.remove('value-update'), { once: true });
         }
         
-        // --- V2.0 新增: 本機儲存功能 ---
         const LOCAL_STORAGE_KEY = 'financialCalculatorState_v1';
         function saveStateToLocalStorage() {
-            const state = {
-                mode: currentMode // V2.1 新增: 儲存目前模式
-            };
-            // 收集所有 input 的值
+            const state = { mode: currentMode };
             Object.keys(DOMElements).forEach(category => {
                 if (category.endsWith('Inputs')) {
                     Object.keys(DOMElements[category]).forEach(inputId => {
@@ -846,37 +806,29 @@
             });
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
         }
-
         function loadStateFromLocalStorage() {
             const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
             if (savedState) {
                 const state = JSON.parse(savedState);
                 Object.keys(state).forEach(inputId => {
-                     if (inputId === 'mode') return; // 略過 mode，另外處理
+                     if (inputId === 'mode') return; 
                      Object.keys(DOMElements).forEach(category => {
-                        if (category.endsWith('Inputs') && DOMElements[category][inputId]) {
-                             DOMElements[category][inputId].value = state[inputId];
-                             const slider = document.getElementById(inputId + 'Slider');
-                             if(slider) slider.value = state[inputId];
-                        }
+                         if (category.endsWith('Inputs') && DOMElements[category][inputId]) {
+                              DOMElements[category][inputId].value = state[inputId];
+                              const slider = document.getElementById(inputId + 'Slider');
+                              if(slider) slider.value = state[inputId];
+                         }
                     });
                 });
-                return state.mode || null; // V2.1 修改: 返回儲存的模式
+                return state.mode || null;
             }
-            return null; // V2.1 修改: 如果沒有儲存狀態則返回 null
+            return null; 
         }
 
-        // V2.1 新增: 分享與讀取 URL 狀態功能
         function generateShareLink() {
             const params = new URLSearchParams();
             params.set('mode', currentMode);
-
-            const allInputs = [
-                ...Object.values(DOMElements.projectionInputs),
-                ...Object.values(DOMElements.goalInputs),
-                ...Object.values(DOMElements.dripInputs)
-            ];
-            
+            const allInputs = [ ...Object.values(DOMElements.projectionInputs), ...Object.values(DOMElements.goalInputs), ...Object.values(DOMElements.dripInputs) ];
             const handledIds = new Set();
             allInputs.forEach(input => {
                 if (input && input.id && !input.id.includes('Slider') && !handledIds.has(input.id)) {
@@ -884,9 +836,7 @@
                     handledIds.add(input.id);
                 }
             });
-
             const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
-            
             const textArea = document.createElement('textarea');
             textArea.value = shareUrl;
             document.body.appendChild(textArea);
@@ -896,16 +846,13 @@
                 const shareButton = DOMElements.shareButton;
                 const originalText = shareButton.innerHTML;
                 shareButton.innerHTML = `<span>已複製連結！</span>`;
-                setTimeout(() => {
-                    shareButton.innerHTML = originalText;
-                }, 2000);
+                setTimeout(() => { shareButton.innerHTML = originalText; }, 2000);
             } catch (err) {
                 console.error('無法複製連結', err);
-                alert('無法自動複製，請手動複製以下連結：\n' + shareUrl);
+                window.prompt("請手動複製此連結:", shareUrl);
             }
             document.body.removeChild(textArea);
         }
-
         function loadStateFromUrl() {
             const params = new URLSearchParams(window.location.search);
             if (params.has('mode')) {
@@ -917,11 +864,35 @@
                         if (slider) slider.value = value;
                     }
                 });
-                return params.get('mode'); // 返回 URL 中的模式
+                return params.get('mode'); 
             }
-            return null; // URL 中沒有模式
+            return null; 
         }
+        
+        // V2.4 新增: 匯出圖片邏輯
+        function exportElementAsImage(elementId, filename) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            showToast('正在產生圖片...');
 
+            html2canvas(element, {
+                backgroundColor: '#f8fafc', // slate-50
+                useCORS: true,
+                scale: 2 // 提高解析度
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('結果圖片已匯出！');
+            }).catch(err => {
+                console.error('匯出失敗:', err);
+                showToast('圖片匯出失敗。');
+            });
+        }
 
         // --- 事件綁定與初始化 ---
         function handleInputChange(e) {
@@ -932,38 +903,34 @@
             const numEl = document.getElementById(baseId);
             const sliderEl = document.getElementById(baseId + 'Slider');
             
-            if (numEl && (numEl.type === 'number' || numEl.type === 'text' || isSlider)) {
-                numEl.value = value;
-            }
-            if (sliderEl) sliderEl.value = value;
+            if (numEl) { numEl.value = value; }
+            if (sliderEl) { sliderEl.value = value; }
 
             if(baseId === 'initialPrincipal') DOMElements.goalInputs.initialPrincipalGoal.value = value;
             if(baseId === 'initialPrincipalGoal') DOMElements.projectionInputs.initialPrincipal.value = value;
 
             calculateAndRender();
-            saveStateToLocalStorage(); // V2.0 新增: 每次變動都儲存
+            saveStateToLocalStorage(); 
         }
         
         function initialize(initialMode = 'projection') {
-            const allInputs = [
-                ...Object.values(DOMElements.projectionInputs),
-                ...Object.values(DOMElements.goalInputs),
-                ...Object.values(DOMElements.dripInputs)
-            ];
+            const allInputs = document.querySelectorAll('input, select');
             allInputs.forEach(input => {
-                if (input) {
-                    input.addEventListener('input', handleInputChange);
-                }
+                if(input) input.addEventListener('input', handleInputChange);
             });
 
             DOMElements.tabs.projection.addEventListener('click', () => handleTabClick('projection'));
             DOMElements.tabs.goal.addEventListener('click', () => handleTabClick('goal'));
             DOMElements.tabs.drip.addEventListener('click', () => handleTabClick('drip'));
-            
-            // V2.1 新增: 分享按鈕事件綁定
             DOMElements.shareButton.addEventListener('click', generateShareLink);
 
-            // V2.0 新增: 預設樣板按鈕事件綁定
+            // V2.4 事件綁定
+            DOMElements.exportButtons.projection.addEventListener('click', () => exportElementAsImage('projection-results', '資產預測結果.png'));
+            DOMElements.exportButtons.goal.addEventListener('click', () => exportElementAsImage('goal-results', '退休計畫結果.png'));
+            DOMElements.exportButtons.drip.addEventListener('click', () => exportElementAsImage('drip-results', '股息再投資結果.png'));
+            DOMElements.toast.closeButton.addEventListener('click', () => DOMElements.toast.element.classList.remove('show'));
+
+
             document.querySelectorAll('.rate-template-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const rate = btn.dataset.rate;
@@ -978,7 +945,6 @@
         }
 
         window.addEventListener('load', () => {
-            // V2.1 修改: 調整讀取順序 URL > LocalStorage > 預設
             let mode = loadStateFromUrl();
             if (!mode) {
                 mode = loadStateFromLocalStorage();
