@@ -20,7 +20,10 @@
     <style>
         body { font-family: 'Inter', 'Noto Sans TC', sans-serif; }
         .form-input { transition: all 0.3s ease; }
-        .result-value { font-weight: 700; font-size: 1.75rem; line-height: 2.25rem; transition: color 0.4s ease, transform 0.4s ease; }
+        .result-value { 
+            font-weight: 700; 
+            transition: color 0.4s ease, transform 0.4s ease, font-size 0.3s ease; 
+        }
         .value-update { animation: pulse-light 0.7s ease-out; }
         @keyframes pulse-light { 0% { color: #4f46e5; transform: scale(1); } 50% { color: #818cf8; transform: scale(1.05); } 100% { color: #4f46e5; transform: scale(1); } }
         input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: #e2e8f0; border-radius: 5px; outline: none; opacity: 0.7; transition: opacity .2s; margin-top: 0.5rem;}
@@ -55,11 +58,19 @@
                     <div class="mt-6 space-y-5">
                         <div>
                             <label for="initialPrincipal" class="text-sm font-medium text-slate-700">初始本金 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="initialPrincipal" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="initialPrincipal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
                         </div>
                         <div>
                             <label for="monthlyContribution" class="text-sm font-medium text-slate-700">每月投入 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="monthlyContribution" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="5000"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="monthlyContribution" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="5000"></div>
+                        </div>
+                        <div>
+                            <label for="contributionGrowthRate" class="text-sm font-medium text-slate-700">每年投入成長率 (%)</label>
+                            <div class="mt-1 relative flex items-center">
+                                <input type="text" inputmode="decimal" id="contributionGrowthRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="0">
+                                <span class="absolute right-0 pr-3 text-slate-400">%</span>
+                            </div>
+                            <input type="range" id="contributionGrowthRateSlider" min="0" max="100" step="0.01" value="0">
                         </div>
                     </div>
                 </div>
@@ -69,11 +80,11 @@
                      <div class="mt-6 space-y-5">
                          <div>
                             <label for="financialGoal" class="text-sm font-medium text-slate-700">退休目標總額 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="financialGoal" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="20000000"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="financialGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="20000000"></div>
                         </div>
                         <div>
                             <label for="initialPrincipalGoal" class="text-sm font-medium text-slate-700">初始本金 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="initialPrincipalGoal" min="0" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="initialPrincipalGoal" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
                         </div>
                     </div>
                 </div>
@@ -83,15 +94,15 @@
                     <div class="mt-6 space-y-5">
                         <div>
                             <label for="dripInitialInvestment" class="text-sm font-medium text-slate-700">初始投資 (元)</label>
-                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="dripInitialInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
+                             <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripInitialInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="100000"></div>
                         </div>
                         <div>
                             <label for="dripSharePrice" class="text-sm font-medium text-slate-700">目前股價 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="dripSharePrice" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="50"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripSharePrice" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="50"></div>
                         </div>
                         <div>
                             <label for="dripDividendPerShare" class="text-sm font-medium text-slate-700">每次每股股息 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="dripDividendPerShare" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="0.5"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripDividendPerShare" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="0.5"></div>
                         </div>
                         <div>
                             <label for="dripDividendFrequency" class="text-sm font-medium text-slate-700">股息發放頻率</label>
@@ -104,17 +115,17 @@
                         </div>
                         <div>
                             <label for="dripDividendGrowth" class="text-sm font-medium text-slate-700">年均股息成長率 (%)</label>
-                            <div class="mt-1 relative flex items-center"><input type="number" id="dripDividendGrowth" min="0" max="30" step="0.5" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
-                            <input type="range" id="dripDividendGrowthSlider" min="0" max="30" step="0.5" value="5">
+                            <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="dripDividendGrowth" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                            <input type="range" id="dripDividendGrowthSlider" min="0" max="100" step="0.01" value="5">
                         </div>
                         <div>
                             <label for="dripSharePriceGrowth" class="text-sm font-medium text-slate-700">年均股價成長率 (%)</label>
-                            <div class="mt-1 relative flex items-center"><input type="number" id="dripSharePriceGrowth" min="0" max="30" step="0.5" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
-                            <input type="range" id="dripSharePriceGrowthSlider" min="0" max="30" step="0.5" value="5">
+                            <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="dripSharePriceGrowth" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="5"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                            <input type="range" id="dripSharePriceGrowthSlider" min="0" max="100" step="0.01" value="5">
                         </div>
                         <div>
                             <label for="dripExtraInvestment" class="text-sm font-medium text-slate-700">每月額外投資 (元)</label>
-                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="number" id="dripExtraInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="1000"></div>
+                            <div class="mt-1 relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">$</span><input type="text" inputmode="decimal" id="dripExtraInvestment" class="form-input w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg" value="1000"></div>
                         </div>
                     </div>
                 </div>
@@ -128,13 +139,13 @@
                     </div>
                     <div id="common-rate-input">
                          <label for="annualRate" class="text-sm font-medium text-slate-700">預估年化報酬率 (%)</label>
-                        <div class="mt-1 relative flex items-center"><input type="number" id="annualRate" min="0" max="50" step="0.5" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="7"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
-                        <input type="range" id="annualRateSlider" min="0" max="50" step="0.5" value="7">
+                        <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="annualRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="7"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                        <input type="range" id="annualRateSlider" min="0" max="100" step="0.01" value="7">
                     </div>
                     <div id="inflation-input-container">
                         <label for="inflationRate" class="text-sm font-medium text-slate-700">預估年通膨率 (%)</label>
-                        <div class="mt-1 relative flex items-center"><input type="number" id="inflationRate" min="0" max="10" step="0.1" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="2"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
-                        <input type="range" id="inflationRateSlider" min="0" max="10" step="0.1" value="2">
+                        <div class="mt-1 relative flex items-center"><input type="text" inputmode="decimal" id="inflationRate" class="form-input w-full pl-4 pr-8 py-2 border border-slate-300 rounded-lg" value="2"><span class="absolute right-0 pr-3 text-slate-400">%</span></div>
+                        <input type="range" id="inflationRateSlider" min="0" max="100" step="0.01" value="2">
                     </div>
                 </div>
 
@@ -183,6 +194,9 @@
                     </div>
                     <div class="mt-4 text-center p-4">
                         <p id="goal-summary" class="text-slate-600"></p>
+                    </div>
+                    <div class="mt-4 p-4 bg-indigo-50 rounded-lg text-sm text-indigo-800">
+                        <p id="fourPercentRuleText" class="text-center"></p>
                     </div>
                 </div>
                 <!-- DRIP Results -->
@@ -233,7 +247,9 @@
         // --- 全域變數與 DOM 元素 ---
         let projectionChart, dripChart;
         let currentMode = 'projection';
-        const formatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 });
+        const formatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        const decimalFormatter = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 
         // 統一定義顏色
         const chartColors = {
@@ -264,6 +280,8 @@
             projectionInputs: {
                 initialPrincipal: document.getElementById('initialPrincipal'),
                 monthlyContribution: document.getElementById('monthlyContribution'),
+                contributionGrowthRate: document.getElementById('contributionGrowthRate'),
+                contributionGrowthRateSlider: document.getElementById('contributionGrowthRateSlider'),
                 annualRate: document.getElementById('annualRate'),
                 years: document.getElementById('years'),
                 inflationRate: document.getElementById('inflationRate'),
@@ -284,6 +302,7 @@
             goalOutputs: {
                 requiredMonthly: document.getElementById('requiredMonthly'),
                 goalSummary: document.getElementById('goal-summary'),
+                fourPercentRuleText: document.getElementById('fourPercentRuleText'),
             },
             // DRIP 計算機 Inputs & Outputs
             dripInputs: {
@@ -344,6 +363,7 @@
         function calculateProjection() {
             const P = parseFloat(DOMElements.projectionInputs.initialPrincipal.value) || 0;
             const PMT = parseFloat(DOMElements.projectionInputs.monthlyContribution.value) || 0;
+            const contributionGrowth = (parseFloat(DOMElements.projectionInputs.contributionGrowthRate.value) || 0) / 100;
             const r = (parseFloat(DOMElements.projectionInputs.annualRate.value) || 0) / 100;
             const t = parseInt(DOMElements.projectionInputs.years.value) || 0;
             const inflation = (parseFloat(DOMElements.projectionInputs.inflationRate.value) || 0) / 100;
@@ -355,14 +375,15 @@
             const labels = ['第0年'];
             const futureValueData = [P];
             const realFutureValueData = [P];
+            let currentPMT = PMT;
 
             for (let year = 1; year <= t; year++) {
                 let yearStartValue = lastYearEndValue;
                 let yearEndValue = yearStartValue;
                 let yearContribution = 0;
                 for (let month = 1; month <= n; month++) {
-                    yearEndValue = yearEndValue * (1 + monthlyRate) + PMT;
-                    yearContribution += PMT;
+                    yearEndValue = yearEndValue * (1 + monthlyRate) + currentPMT;
+                    yearContribution += currentPMT;
                 }
                 const yearInterest = yearEndValue - yearStartValue - yearContribution;
                 yearlyDetails.push({ year, contribution: yearContribution, interest: yearInterest, endValue: yearEndValue });
@@ -371,6 +392,9 @@
                 labels.push(`第${year}年`);
                 futureValueData.push(yearEndValue);
                 realFutureValueData.push(yearEndValue / Math.pow(1 + inflation, year));
+                
+                // 為下一年準備，增加每月投入
+                currentPMT *= (1 + contributionGrowth);
             }
             const finalFutureValue = t > 0 ? lastYearEndValue : P;
             const finalRealValue = t > 0 ? finalFutureValue / Math.pow(1 + inflation, t) : P;
@@ -459,8 +483,14 @@
 
         // --- UI 更新函式 ---
         function updateProjectionUI(fv, r_fv, details) {
-            DOMElements.projectionOutputs.futureValue.textContent = formatter.format(fv);
-            DOMElements.projectionOutputs.realFutureValue.textContent = formatter.format(r_fv);
+            const fvText = formatter.format(fv);
+            adjustFontSize(DOMElements.projectionOutputs.futureValue, fvText);
+            DOMElements.projectionOutputs.futureValue.textContent = fvText;
+
+            const rFvText = formatter.format(r_fv);
+            adjustFontSize(DOMElements.projectionOutputs.realFutureValue, rFvText);
+            DOMElements.projectionOutputs.realFutureValue.textContent = rFvText;
+            
             animateValue(DOMElements.projectionOutputs.futureValue);
             animateValue(DOMElements.projectionOutputs.realFutureValue);
             
@@ -472,17 +502,32 @@
         }
 
         function updateGoalUI(pmt, fv, t) {
-            DOMElements.goalOutputs.requiredMonthly.textContent = formatter.format(Math.max(0, pmt));
+            const pmtText = formatter.format(Math.max(0, pmt));
+            adjustFontSize(DOMElements.goalOutputs.requiredMonthly, pmtText);
+            DOMElements.goalOutputs.requiredMonthly.textContent = pmtText;
             animateValue(DOMElements.goalOutputs.requiredMonthly);
+
             DOMElements.goalOutputs.goalSummary.textContent = `在 ${t} 年後，達成 ${formatter.format(fv)} 的目標。`;
+            
+            const annualWithdrawal = fv * 0.04;
+            DOMElements.goalOutputs.fourPercentRuleText.innerHTML = `根據 <b>4% 法則</b>，這筆 ${formatter.format(fv)} 的退休金，每年約可提領 <b>${formatter.format(annualWithdrawal)}</b> 作為生活費。`;
         }
 
         function displayDripResults(results, inputs) {
             const finalYearData = results.yearlyResults[results.yearlyResults.length - 1] || { endBalance: inputs.initialInvestment };
             
-            DOMElements.dripOutputs.endBalance.textContent = formatter.format(finalYearData.endBalance);
-            DOMElements.dripOutputs.totalInvested.textContent = formatter.format(results.totalInvested);
-            DOMElements.dripOutputs.totalDividends.textContent = formatter.format(results.totalDividends);
+            const endBalanceText = decimalFormatter.format(finalYearData.endBalance);
+            adjustFontSize(DOMElements.dripOutputs.endBalance, endBalanceText);
+            DOMElements.dripOutputs.endBalance.textContent = endBalanceText;
+
+            const totalInvestedText = decimalFormatter.format(results.totalInvested);
+            adjustFontSize(DOMElements.dripOutputs.totalInvested, totalInvestedText);
+            DOMElements.dripOutputs.totalInvested.textContent = totalInvestedText;
+
+            const totalDividendsText = decimalFormatter.format(results.totalDividends);
+            adjustFontSize(DOMElements.dripOutputs.totalDividends, totalDividendsText);
+            DOMElements.dripOutputs.totalDividends.textContent = totalDividendsText;
+
             animateValue(DOMElements.dripOutputs.endBalance);
             animateValue(DOMElements.dripOutputs.totalInvested);
             animateValue(DOMElements.dripOutputs.totalDividends);
@@ -490,6 +535,21 @@
             createOrUpdateDripChart(results.yearlyResults);
             updateDripTable(results.yearlyResults);
         }
+        
+        function adjustFontSize(element, text) {
+            const baseSize = '1.75rem'; // text-3xl
+            const mediumSize = '1.5rem'; // text-2xl
+            const smallSize = '1.25rem'; // text-xl
+
+            if (text.length > 13) {
+                element.style.fontSize = smallSize;
+            } else if (text.length > 10) {
+                element.style.fontSize = mediumSize;
+            } else {
+                element.style.fontSize = baseSize;
+            }
+        }
+
 
         // --- 圖表函式 ---
         function createOrUpdateProjectionChart(labels, fvData, realFvData) {
@@ -545,7 +605,7 @@
         function updateDripTable(yearlyResults) {
             let tableHTML = '';
             yearlyResults.forEach(item => {
-                tableHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${formatter.format(item.startBalance)}</td><td class="px-4 py-2 text-right">${formatter.format(item.dividends)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${formatter.format(item.endBalance)}</td></tr>`;
+                tableHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 py-2 font-medium">${item.year}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.startBalance)}</td><td class="px-4 py-2 text-right">${decimalFormatter.format(item.dividends)}</td><td class="px-4 py-2 text-right font-semibold text-slate-800">${decimalFormatter.format(item.endBalance)}</td></tr>`;
             });
             DOMElements.dripOutputs.detailsTableBody.innerHTML = tableHTML;
         }
@@ -563,8 +623,11 @@
             
             const numEl = document.getElementById(baseId);
             const sliderEl = document.getElementById(baseId + 'Slider');
-
-            if (numEl) numEl.value = value;
+            
+            // 當手動輸入時，只更新滑桿的值，但不要重新設定輸入框的值
+            if (isSlider) {
+                if (numEl) numEl.value = value;
+            }
             if (sliderEl) sliderEl.value = value;
 
             if(baseId === 'initialPrincipal') DOMElements.goalInputs.initialPrincipalGoal.value = value;
@@ -580,7 +643,14 @@
                 ...Object.values(DOMElements.dripInputs)
             ];
             allInputs.forEach(input => {
-                if (input) input.addEventListener('input', handleInputChange);
+                if (input) {
+                    // 對於文字輸入框，我們使用 change 事件，在輸入完成後才觸發
+                    if (input.type === 'text' || input.type === 'number') {
+                         input.addEventListener('input', handleInputChange);
+                    } else { // 對於滑桿，我們依然使用 input 事件來達到即時反饋
+                        input.addEventListener('input', handleInputChange);
+                    }
+                }
             });
 
             DOMElements.tabs.projection.addEventListener('click', () => handleTabClick('projection'));
